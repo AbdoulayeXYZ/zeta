@@ -12,6 +12,7 @@ import { TestimonialComponent } from './components/testimonial/testimonial.compo
 import { PricingComponent } from './components/pricing/pricing.component';
 import { TeamComponent } from './components/team/team.component';
 import { ContactComponent } from './components/contact/contact.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 
 
@@ -26,10 +27,12 @@ import { ContactComponent } from './components/contact/contact.component';
         TestimonialComponent,
         PricingComponent,
         TeamComponent,
-        ContactComponent
+        ContactComponent,
+        NavbarComponent
     ],
     exports: [
-        HomeComponent
+        HomeComponent,
+        NavbarComponent
     ],
     imports: [
         CommonModule,

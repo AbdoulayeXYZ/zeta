@@ -7,16 +7,20 @@ import { AppComponent } from './app.component';
 /* Modules import */
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
+import { AppDashboardNavbar } from './dashboard/dashboard/navbar/navbar.component';
+import { DashboardModule } from './dashboard/dashboard/dashboard.module';
+import { StatsheaderComponent } from './dashboard/dashboard/statsheader/statsheader.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     SharedModule,
-    CoreModule
+    DashboardModule,
+    CoreModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

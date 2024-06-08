@@ -1,3 +1,4 @@
-<app-header></app-header>
+<app-dashboard-navbar *ngIf="isDashboardRoute"></app-dashboard-navbar>
+<app-navbar *ngIf="!isDashboardRoute"></app-navbar>
 <router-outlet></router-outlet>
-<app-footer></app-footer>
+<app-footer *ngIf="!isDashboardRoute"></app-footer>
