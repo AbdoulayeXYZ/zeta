@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 
 export class ManageUsersComponent implements OnInit {
-  tabs: string[] = ['Users', 'Admin', 'Owner', 'Specialist'];
+  tabs: string[] = ['Users', 'Owner', 'Specialist', 'AdminZeta'];
   activatedIndex: number = 0;
   ngOnInit(): void {
   }
