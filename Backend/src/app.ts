@@ -1,12 +1,22 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import connectMongoDB from './configs/mongodb.config';
+import mongoose from 'mongoose';
 import userRoutes from './routes/user.route';
 import { Request, Response } from 'express';
 import cors from 'cors';
 
 dotenv.config();
+
+const uri = 'mongodb+srv://niasse:JAAyzafjAPRdYCQf@cluster0.euuqg0j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+mongoose.connect(uri)
+  .then(() => {
+    console.log('MongoDB connected successfully');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -18,9 +28,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(bodyParser.json());
-
-// Connect to MongoDB
-connectMongoDB();
 
 // Routes
 app.use(`/${process.env.API_PREFIX}/users`, userRoutes);
