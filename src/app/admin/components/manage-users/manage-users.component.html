@@ -1,0 +1,18 @@
+<div id="parent" class="text-gray-900 mt-4">
+    <app-tab-nav [tabsArr]="tabs" (onChangeTab)="changeTab($event)"></app-tab-nav>
+    <div id="enfant">
+      <!-- AFFICHE LE CONTENU TAB 1 -->
+      <div *ngIf="activatedIndex == 0">
+        <app-table-user></app-table-user>
+      </div>
+      <!-- AFFICHE LE CONTENU TAB 2 -->
+      <div *ngIf="activatedIndex == 1">
+        <app-table-owner></app-table-owner>
+      </div>
+      <div *ngIf="activatedIndex == 2">
+        <app-table-specialist></app-table-specialist>
+      </div>
+      <div *ngIf="activatedIndex == 3">
+        <app-table-adminzeta></app-table-adminzeta>
+      </div>
+  </div>

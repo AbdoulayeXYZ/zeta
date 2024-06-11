@@ -18,9 +18,10 @@ export const signup = async (request: Request, response: Response) => {
                 password: hash,
                 type: type,
         });
-       
+       // hehe boi
         const add = await service.AddUser(newUser);
         
+
         response.status(201).json({
             message: `Successful registration ${add.fullName} OK.`
         });
@@ -32,7 +33,7 @@ export const signup = async (request: Request, response: Response) => {
     }
 };
 
-export const addOwner = async (request: Request, response: Response) => {
+export const addTrainer = async (request: Request, response: Response) => {
     try {
         const { fullName, email, password } = request.body;
 
@@ -47,37 +48,12 @@ export const addOwner = async (request: Request, response: Response) => {
         const user = await service.signup(newUser);
 
         response.status(201).json({
-            message: "Owner ajouté avec succès"
+            message: "Formateur ajouté avec succès"
         });
     } catch (error) {
         console.error(error);
         response.status(500).json({
-            message: "Owner registration error"
-        });
-    }
-};
-
-export const addSpecialist = async (request: Request, response: Response) => {
-    try {
-        const { fullName, email, password } = request.body;
-
-        const hash = await bcrypt.hash(password, 10);
-
-        const newUser = new User({
-                fullName: fullName,
-                email: email,
-                password: hash,
-                type: ROLE.OWNER,
-        });
-        const user = await service.signup(newUser);
-
-        response.status(201).json({
-            message: "Specialist ajouté avec succès"
-        });
-    } catch (error) {
-        console.error(error);
-        response.status(500).json({
-            message: "Specialist registration error"
+            message: "Trainer registration error"
         });
     }
 };
@@ -155,3 +131,20 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 };
 
+export const getUserCount = async (req: Request, res: Response) => {
+    try {
+        const count = await User.countDocuments();
+        res.json({ totalUsers: count });
+    } catch (error) {
+        res.status(500).send(error);
+    }
+};
+
+export const getTrainerCount = async (req: Request, res: Response) => {
+    try {
+        const count = await User.countDocuments({ type: 'Formateur' });
+        res.json({ totalTrainers: count });
+    } catch (error) {
+        res.status(500).send(error);
+    }
+};

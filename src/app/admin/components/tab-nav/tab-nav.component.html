@@ -1,0 +1,11 @@
+<ul class="flex border-b">
+    <li
+      class="mr-1"
+      *ngFor="let tab of tabsArr; let src = index"
+      (click)="getTab(src)"
+    >
+      <a class="inline-block py-2 px-4 text-black" [ngClass]="activeTab == src ? 'border-b-2 border-blue-500' : ''"
+        >{{ tab }}
+      </a>
+    </li>
+</ul>

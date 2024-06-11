@@ -1,0 +1,11 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+#parent{
+    padding-top: 70px;
+    margin: 10px;
+}
+#enfant{
+    padding-top: 10px;
+}
