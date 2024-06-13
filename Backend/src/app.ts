@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import userRoutes from './routes/user.route';
 import { Request, Response } from 'express';
 import cors from 'cors';
+import workspaceRoutes from './routes/workspace.route';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use(`/${process.env.API_PREFIX}/users`, userRoutes);
+app.use("/api", workspaceRoutes);
 
 // Basic route for testing
 app.get('/', (req: Request, res: Response) => {

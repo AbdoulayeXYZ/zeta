@@ -1,1 +1,13 @@
-<p>workspace works!</p>
+<ng-container *ngIf="workspaces && workspaces.length > 0">
+  <div class="workspace-container flex flex-wrap justify-center" style="margin-top: 90px;" *ngFor="let workspace of workspaces">
+    <div class="bg-white shadow-[0_8px_12px_-6px_rgba(0,0,0,0.2)] border p-2 w-full max-w-xs rounded-lg font-[sans-serif] overflow-hidden mx-2 mt-4">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuDg6u1TUTRbfoO4plUpZfFLwNp55T_UNVjA&s" class="w-full rounded-lg" />
+      <div class="px-4 my-6 text-center">
+        <h3 class="text-lg font-semibold">{{ workspace.name }}</h3>
+        <p class="mt-2 text-sm text-gray-400">Email: {{ workspace.email }}</p>
+        <p class="mt-2 text-sm text-gray-400">Téléphone: {{ workspace.phoneNumber }}</p>
+        <button type="button" class="px-6 py-2 w-full mt-4 rounded-lg text-white text-sm tracking-wider font-semibold border-none outline-none bg-blue-600 hover:bg-blue-700 active:bg-blue-600">View</button>
+      </div>
+    </div>
+  </div>
+</ng-container>
