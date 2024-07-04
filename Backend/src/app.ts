@@ -6,18 +6,11 @@ import userRoutes from './routes/user.route';
 import { Request, Response } from 'express';
 import cors from 'cors';
 import workspaceRoutes from './routes/workspace.route';
+import connectMongoDB from './configs/mongodb.config';
 
 dotenv.config();
 
-const uri = 'mongodb+srv://niasse:JAAyzafjAPRdYCQf@cluster0.euuqg0j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-
-mongoose.connect(uri)
-  .then(() => {
-    console.log('MongoDB connected successfully');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+connectMongoDB();
 
 const PORT = process.env.PORT || 3000;
 const app = express();

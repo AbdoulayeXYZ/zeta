@@ -8,7 +8,7 @@ import { IWorkspace } from '../models/workspace.model';
 })
 export class WorkspaceService {
 
-  private baseUrl = 'http://localhost:3000/workspaces'; // Adjust the base URL as per actual backend API
+  private baseUrl = 'http://localhost:3000/api/workspaces'; // Adjust the base URL as per actual backend API
 
   constructor(private http: HttpClient) { }
 

@@ -19,7 +19,7 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: DashboardComponent,
+        component: DashboardComponent, 
       },
       {
         path:'manage-users',

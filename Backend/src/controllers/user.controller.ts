@@ -10,6 +10,12 @@ export const signup = async (request: Request, response: Response) => {
     try {
         const { fullName, email, password, type } = request.body;
 
+        // Check if email already exists
+        const existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            return response.status(409).send('Email already in use');
+        }
+
         const hash = await bcrypt.hash(password, 10);
 
         const newUser = new User({
