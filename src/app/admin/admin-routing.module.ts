@@ -9,7 +9,7 @@ import { DatasetComponent } from './components/dataset/dataset.component';
 
 const routes: Routes = [
   {
-    path:'',
+    path: '',
     component: AdminComponent,
     children: [
       {
@@ -22,7 +22,7 @@ const routes: Routes = [
         component: DashboardComponent, 
       },
       {
-        path:'manage-users',
+        path: 'manage-users',
         component: ManageUsersComponent,
       },
       {
@@ -30,7 +30,7 @@ const routes: Routes = [
         component: WorkspaceComponent,
       },
       {
-        path:'model',
+        path: 'model',
         component: ModelComponent,
       },
       {

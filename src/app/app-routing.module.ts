@@ -9,6 +9,18 @@ import { ContactComponent } from './core/components/contact/contact.component';
 import { PricingComponent } from './core/components/pricing/pricing.component';
 
 const routes: Routes = [
+  {
+    path: 'owner',
+    loadChildren: () => import('./owner/owner-routing.module').then(m => m.OwnerRoutingModule)
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin-routing.module').then(m => m.AdminRoutingModule)
+  },
+  {
+    path: 'specialist',
+    loadChildren: () => import('./specialist/specialist-routing.module').then(m => m.SpecialistRoutingModule)
+  },
   { path: 'portal',
     loadChildren: () =>
     import('./portal/portal.module').then(m => m.PortalModule),

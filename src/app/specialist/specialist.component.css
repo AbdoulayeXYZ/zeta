@@ -1,0 +1,21 @@
+.specialist-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100%;
+}
+
+.sidebarspecialist {
+    flex: 0 0 250px; /* Fixed width for sidebar */
+}
+
+.headerspecialist {
+    flex: 0 0 70px; /* Fixed height for header */
+    width: calc(100% - 250px); /* Adjust width to be next to sidebar */
+}
+
+.contentspecialist {
+    flex: 1; /* Takes remaining space */
+    overflow-y: auto;
+}
+

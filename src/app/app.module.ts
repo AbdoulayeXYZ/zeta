@@ -12,6 +12,8 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 import { AdminModule } from './admin/admin.module';
+import { OwnerModule } from './owner/owner.module';
+import { SpecialistModule } from './specialist/specialist.module';
 
 @NgModule({
   declarations: [
@@ -22,9 +24,11 @@ import { AdminModule } from './admin/admin.module';
     SharedModule,
     HttpClientModule,
     ReactiveFormsModule,
-    AdminModule,
     CoreModule,
     AppRoutingModule,
+    AdminModule,
+    OwnerModule,
+    SpecialistModule
   ],
   providers: [ { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }],
   bootstrap: [AppComponent]
