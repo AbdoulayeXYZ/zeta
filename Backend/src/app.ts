@@ -6,6 +6,7 @@ import userRoutes from './routes/user.route';
 import { Request, Response } from 'express';
 import cors from 'cors';
 import workspaceRoutes from './routes/workspace.route';
+import patientRoutes from './routes/patient.route'
 import connectMongoDB from './configs/mongodb.config';
 
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 // Routes
 app.use(`/${process.env.API_PREFIX}/users`, userRoutes);
 app.use("/api", workspaceRoutes);
+app.use("/api", patientRoutes);
 
 // Basic route for testing
 app.get('/', (req: Request, res: Response) => {

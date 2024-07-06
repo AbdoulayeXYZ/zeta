@@ -1,1 +1,117 @@
-<p>manage-patients works!</p>
+<div class="manage-container container mx-auto">
+    <br><br><br>
+    <h4 class="text-3xl font-extrabold text-gray-800 mb-12">Manage Patients</h4>
+  
+    <div>
+      <h3 class="text-2xl font-bold mb-4">Create New Patient</h3>
+      <form (ngSubmit)="createPatient()" class="font-[sans-serif] max-w-4xl mx-auto">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="relative flex items-center">
+            <input [(ngModel)]="newPatient.fullName" name="fullName" placeholder="Full Name" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="newPatient.age" name="age" type="number" placeholder="Age" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="newPatient.sexe" name="sexe" placeholder="Sexe" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="newPatient.specialist" name="specialist" placeholder="Specialist ID" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="newPatient.workspace" name="workspace" placeholder="Workspace ID" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+        </div>
+        <button type="submit"
+          class="mt-8 px-6 py-2.5 text-sm w-full bg-[#007bff] hover:bg-[#006bff] text-white rounded transition-all">Create</button>
+      </form>
+    </div>
+  <br><br><br>
+    <div>
+      <h3 class="text-2xl font-bold mb-4">Patients List</h3>
+      <div class="mt-8 px-6 py-2.5 text-sm w-full text-white rounded transition-all font-[sans-serif] overflow-x-auto">
+        <table class="min-w-full bg-white">
+          <thead class="bg-gray-800 whitespace-nowrap">
+            <tr>
+              <th class="p-4 text-left text-sm font-medium text-white">
+                Name
+              </th>
+              <th class="p-4 text-left text-sm font-medium text-white">
+                Age
+              </th>
+              <th class="p-4 text-left text-sm font-medium text-white">
+                Sexe
+              </th>
+              <th class="p-4 text-left text-sm font-medium text-white">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="whitespace-nowrap">
+            <tr *ngFor="let patient of patients" class="even:bg-blue-50">
+              <td class="p-4 text-sm text-black">
+                {{ patient.fullName }}
+              </td>
+              <td class="p-4 text-sm text-black">
+                {{ patient.age }}
+              </td>
+              <td class="p-4 text-sm text-black">
+                {{ patient.sexe }}
+              </td>
+              <td class="p-4">
+                <button class="mr-4" title="Edit" (click)="selectPatient(patient)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 fill-blue-500 hover:fill-blue-700" viewBox="0 0 348.882 348.882">
+                    <path d="m333.988 11.758-.42-.383A43.363 43.363 0 0 0 304.258 0a43.579 43.579 0 0 0-32.104 14.153L116.803 184.231a14.993 14.993 0 0 0-3.154 5.37l-18.267 54.762c-2.112 6.331-1.052 13.333 2.835 18.729 3.918 5.438 10.23 8.685 16.886 8.685h.001c2.879 0 5.693-.592 8.362-1.76l52.89-23.138a14.985 14.985 0 0 0 5.063-3.626L336.771 73.176c16.166-17.697 14.919-45.247-2.783-61.418zM130.381 234.247l10.719-32.134.904-.99 20.316 18.556-.904.99-31.035 13.578zm184.24-181.304L182.553 197.53l-20.316-18.556L294.305 34.386c2.583-2.828 6.118-4.386 9.954-4.386 3.365 0 6.588 1.252 9.082 3.53l.419.383c5.484 5.009 5.87 13.546.861 19.03z" data-original="#000000" />
+                    <path d="M303.85 138.388c-8.284 0-15 6.716-15 15v127.347c0 21.034-17.113 38.147-38.147 38.147H68.904c-21.035 0-38.147-17.113-38.147-38.147V100.413c0-21.034 17.113-38.147 38.147-38.147h131.587c8.284 0 15-6.716 15-15s-6.716-15-15-15H68.904C31.327 32.266.757 62.837.757 100.413v180.321c0 37.576 30.571 68.147 68.147 68.147h181.798c37.576 0 68.147-30.571 68.147-68.147V153.388c.001-8.284-6.715-15-14.999-15z" data-original="#000000" />
+                  </svg>
+                </button>
+                <button class="mr-4" title="Delete" (click)="deletePatient(patient._id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 fill-red-500 hover:fill-red-700" viewBox="0 0 24 24">
+                    <path d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z" data-original="#000000" />
+                    <path d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z" data-original="#000000" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <div *ngIf="selectedPatient">
+      <h3 class="text-2xl font-bold mb-4">Edit Patient</h3>
+      <form (ngSubmit)="updatePatient()" class="font-[sans-serif] max-w-4xl mx-auto">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="relative flex items-center">
+            <input [(ngModel)]="selectedPatient.fullName" name="fullName" placeholder="Full Name" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="selectedPatient.age" name="age" type="number" placeholder="Age" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="selectedPatient.sexe" name="sexe" placeholder="Sexe" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="selectedPatient.specialist" name="specialist" placeholder="Specialist ID" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+          <div class="relative flex items-center">
+            <input [(ngModel)]="selectedPatient.workspace" name="workspace" placeholder="Workspace ID" required
+              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
+          </div>
+        </div>
+        <button type="submit"
+          class="mt-8 px-6 py-2.5 text-sm w-full bg-[#007bff] hover:bg-[#006bff] text-white rounded transition-all">Update</button>
+        <button type="button" (click)="clearSelection()"
+          class="mt-8 px-6 py-2.5 text-sm w-full bg-gray-500 hover:bg-gray-700 text-white rounded transition-all">Cancel</button>
+      </form>
+    </div>
+  </div>
