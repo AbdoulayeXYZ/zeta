@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private readonly JWT_TOKEN = 'token';
+  private readonly USER = 'user';
   private apiUrl = 'http://localhost:3000/api/users'; // URL de base pour les requêtes
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -15,9 +16,12 @@ export class AuthService {
   login(user: { email: string; password: string }) {
     return this.http
       .post<any>(`${this.apiUrl}/login`, user)
-      .pipe
-      //      tap(res => this.storeJwtToken(res.accessToken))
-      ();
+      .pipe(
+        tap(res => {
+          this.storeJwtToken(res.token);
+          this.setCurruntUser(res.user);
+        })
+      );
   }
 
   signup(user: {
@@ -27,23 +31,40 @@ export class AuthService {
     iAgree: boolean;
   }) {
     return this.http
-      .post<{ accessToken: string }>(`${this.apiUrl}/signup`, user)
-      .pipe();
+      .post<{ token: string, user: any }>(`${this.apiUrl}/signup`, user)
+      .pipe(
+        tap(res => {
+          this.storeJwtToken(res.token);
+          this.setCurruntUser(res.user);
+        })
+      );
   }
 
   storeJwtToken(jwt: string) {
     localStorage.setItem(this.JWT_TOKEN, jwt);
   }
+
   setCurruntUser(user: any) {
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem(this.USER, JSON.stringify(user));
   }
 
   getJwtToken() {
     return localStorage.getItem(this.JWT_TOKEN);
   }
-  getCurruntUser() {
-    const userString = localStorage.getItem('user');
+
+  getCurrentUser() {
+    const userString = localStorage.getItem(this.USER);
     return userString ? JSON.parse(userString) : null;
+  }
+
+  getSpecialistId() {
+    const currentUser = this.getCurrentUser();
+    return currentUser ? currentUser._id : null;
+  }
+
+  getSpecialistWorkspace() {
+    const currentUser = this.getCurrentUser();
+    return currentUser ? currentUser.workspace : null;
   }
 
   loggedIn() {
@@ -52,7 +73,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(this.JWT_TOKEN);
-    localStorage.removeItem('user');
+    localStorage.removeItem(this.USER);
     // Redirect the user to the login page
     this.router.navigate(['login']);
   }

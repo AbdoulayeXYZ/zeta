@@ -7,19 +7,25 @@ import { TeamComponent } from './core/components/team/team.component';
 import { FeaturesComponent } from './core/components/features/features.component';
 import { ContactComponent } from './core/components/contact/contact.component';
 import { PricingComponent } from './core/components/pricing/pricing.component';
+import { isAdminGuard } from './guards/is-admin.guard';
+import { isOwnerGuard } from './guards/is-owner.guard';
+import { isSpecialistGuard } from './guards/is-specialist.guard';
 
 const routes: Routes = [
   {
     path: 'owner',
-    loadChildren: () => import('./owner/owner-routing.module').then(m => m.OwnerRoutingModule)
+    loadChildren: () => import('./owner/owner-routing.module').then(m => m.OwnerRoutingModule),
+    // canActivate: [isOwnerGuard]
   },
   {
     path: 'admin',
-    loadChildren: () => import('./admin/admin-routing.module').then(m => m.AdminRoutingModule)
+    loadChildren: () => import('./admin/admin-routing.module').then(m => m.AdminRoutingModule),
+    // canActivate: [isAdminGuard]
   },
   {
     path: 'specialist',
-    loadChildren: () => import('./specialist/specialist-routing.module').then(m => m.SpecialistRoutingModule)
+    loadChildren: () => import('./specialist/specialist-routing.module').then(m => m.SpecialistRoutingModule),
+    // canActivate: [isSpecialistGuard]
   },
   { path: 'portal',
     loadChildren: () =>

@@ -15,3 +15,4 @@ export class ManageUsersComponent implements OnInit {
     this.activatedIndex = tabIndex;
   }
 }
+

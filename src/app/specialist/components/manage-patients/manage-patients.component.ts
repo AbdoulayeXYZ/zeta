@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from '../../../services/patient.service';
+import { DetectionService } from '../../../services/detection.service';
 import { IPatient } from '../../../models/patient.model';
+import { IDetection } from '../../../models/detection.model';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-manage-patients',
@@ -19,8 +22,12 @@ export class ManagePatientsComponent implements OnInit {
     specialist: '',
     workspace: ''
   };
+  showUploadPopup: boolean = false;
+  showDeleteConfirmation: boolean = false;
+  detectionResult: string = '';
+  selectedFile: File | null = null;
 
-  constructor(private patientService: PatientService) {}
+  constructor(private patientService: PatientService, private detectionService: DetectionService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.getPatients();
@@ -41,28 +48,29 @@ export class ManagePatientsComponent implements OnInit {
   }
 
   createPatient(): void {
+    const currentUser = this.authService.getCurrentUser();
     const newPatientData: Partial<IPatient> = {
-        fullName: this.newPatient.fullName,
-        age: this.newPatient.age,
-        sexe: this.newPatient.sexe,
-        specialist: this.newPatient.specialist,
-        workspace: this.newPatient.workspace
+      fullName: this.newPatient.fullName,
+      age: this.newPatient.age,
+      sexe: this.newPatient.sexe,
+      specialist: currentUser._id, // Use the ID of the logged-in specialist
+      workspace: currentUser.workspace // Use the workspace of the logged-in specialist
     };
 
     this.patientService.createPatient(newPatientData).subscribe(
-        (data) => {
-            this.patients.push(data);
-            this.newPatient = {
-                _id: '',
-                fullName: '',
-                age: 0,
-                sexe: '',
-                createdAt: new Date(),
-                specialist: '',
-                workspace: ''
-            };
-        },
-        (error) => console.error('Error creating patient:', error)
+      (data) => {
+        this.patients.push(data);
+        this.newPatient = {
+          _id: '',
+          fullName: '',
+          age: 0,
+          sexe: '',
+          createdAt: new Date(),
+          specialist: '',
+          workspace: ''
+        };
+      },
+      (error) => console.error('Error creating patient:', error)
     );
   }
 
@@ -94,5 +102,35 @@ export class ManagePatientsComponent implements OnInit {
 
   clearSelection(): void {
     this.selectedPatient = null;
+  }
+
+  openDetectionPopup(patient: IPatient): void {
+    this.selectedPatient = patient;
+    this.showUploadPopup = true;
+  }
+
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  createDetection(patientId: string, specialistId: string, image: File | null): void {
+    if (!image) {
+      console.error('No file selected');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('patient', patientId);
+    formData.append('specialist', specialistId);
+    formData.append('image', image);
+    formData.append('result', this.detectionResult);
+
+    this.detectionService.createDetection(formData).subscribe(
+      (data) => {
+        console.log('Detection created:', data);
+        this.showUploadPopup = false;
+      },
+      (error) => console.error('Error creating detection:', error)
+    );
   }
 }

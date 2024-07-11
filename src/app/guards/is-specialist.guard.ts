@@ -6,7 +6,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class isSpecialistGuard {
   canActivate: CanActivateFn = () => {
-    if (this.authService.getCurruntUser().type != 'Specialist') {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || currentUser.type !== 'Specialist') {
       this.router.navigate(['login']);
       return false;
     }

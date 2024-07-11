@@ -13,6 +13,7 @@ import { PricingComponent } from './components/pricing/pricing.component';
 import { TeamComponent } from './components/team/team.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -37,7 +38,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     imports: [
         CommonModule,
         SharedModule,
-        BrowserModule
+        BrowserModule,
+        ReactiveFormsModule
     ]
 })
 export class CoreModule { }
