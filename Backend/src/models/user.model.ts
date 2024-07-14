@@ -8,6 +8,8 @@ export interface IUser extends Document {
     email: string;
     password: string;
     type: string;
+    speciality: string;
+    ownerID: IUser[],
 }
 
 const userSchema: Schema = new Schema({
@@ -15,6 +17,9 @@ const userSchema: Schema = new Schema({
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     type: {type: String, enum: [ROLE.ADMIN, ROLE.OWNER, ROLE.SPECIALIST], required: true},
+    speciality: {type: String},
+    ownerID: [{ type: Schema.Types.ObjectId, ref: 'users' }]
+
 });
 
 userSchema.plugin(uniqueValidator);

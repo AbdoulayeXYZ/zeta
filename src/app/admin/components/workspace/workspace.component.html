@@ -4,7 +4,7 @@
     <h4 class="text-3xl font-extrabold text-gray-800 mb-12">ADD Workspaces</h4>
     <form [formGroup]="addWorkspaceForm" (ngSubmit)="saveWorkspace()" class="font-[sans-serif] max-w-4xl mx-auto">
       <div class="grid sm:grid-cols-2 gap-4">
-        <div class="relative flex items-center">
+        <div class="relative flex items-center w-full sm:w-3/4">
           <input type="text" formControlName="name" placeholder="Workspace Name"
             class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
           <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-4"
@@ -16,7 +16,7 @@
           </svg>
         </div>
 
-        <div class="relative flex items-center">
+        <div class="relative flex items-center w-full sm:w-3/4">
           <input type="email" formControlName="email" placeholder="Email"
             class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
           <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-4"
@@ -37,7 +37,7 @@
           </svg>
         </div>
 
-        <div class="relative flex items-center">
+        <div class="relative flex items-center w-full sm:w-3/4">
           <input type="text" formControlName="phoneNumber" placeholder="Phone Number"
             class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
           <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb"
@@ -48,7 +48,7 @@
           </svg>
         </div>
 
-        <div class="relative flex items-center">
+        <div class="relative flex items-center w-full sm:w-3/4">
           <input type="text" formControlName="owner" placeholder="Owner ID"
             class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border outline-[#007bff] rounded transition-all" />
           <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-4"
@@ -67,35 +67,22 @@
 </div>
 <br><br>
 
-<div class="font-[sans-serif] py-4 mx-auto lg:max-w-6xl max-w-lg md:max-w-full" *ngIf="workspaces && workspaces.length > 0">
-  <h4 class="text-3xl font-extrabold text-gray-800 mb-12">Workspaces</h4>
+<div class="font-sans py-4 mx-auto lg:max-w-6xl md:max-w-4xl max-sm:max-w-md" *ngIf="workspaces && workspaces.length > 0">
+  <h2 class="text-4xl font-extrabold text-gray-800 text-center mb-12">Workspaces</h2>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div class="bg-gray-200 rounded-xl cursor-pointer hover:scale-[1.03] transition-all relative overflow-hidden" *ngFor="let workspace of workspaces">
-      <div class="p-6">
-        <div class="bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer absolute top-4 right-4">
-          <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16px" class="fill-white inline-block" viewBox="0 0 24 24">
-              <path d="M18.3 5.71a1 1 0 0 0-1.42 0L12 10.59 7.12 5.71a1 1 0 0 0-1.42 1.42L10.59 12l-4.89 4.88a1 1 0 0 0 1.42 1.42L12 13.41l4.88 4.89a1 1 0 0 0 1.42-1.42L13.41 12l4.89-4.88a1 1 0 0 0 0-1.42z" data-original="#000000"></path>
-            </svg>
-          </button>
-        </div>
-
-        <div class="w-2/3 h-[220px] overflow-hidden mx-auto aspect-w-16 aspect-h-8">
-          <img src="https://static.vecteezy.com/system/resources/previews/024/701/002/non_2x/illustration-hospital-building-and-ambulance-free-png.png" alt="Workspace Image" class="h-full w-full object-contain" />
-        </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-6 gap-12">
+    <div class="bg-gray-100 p-3 rounded-lg group overflow-hidden cursor-pointer relative z-50 hover:before:bg-black before:absolute before:inset-0 before:opacity-20 before:transition-all" *ngFor="let workspace of workspaces">
+      <div class="w-full h-[300px] overflow-hidden mx-auto aspect-w-16 aspect-h-8">
+        <img src="https://static.vecteezy.com/system/resources/previews/024/701/002/non_2x/illustration-hospital-building-and-ambulance-free-png.png" alt="Workspace Image" class="h-full w-full object-contain" />
       </div>
 
-      <div class="text-center bg-gray-100 p-6">
-        <h3 class="text-lg font-bold text-gray-800">{{ workspace.name }}</h3>
-        <p class="mt-2 text-sm text-gray-400">Email: {{ workspace.email }}</p>
-        <p class="mt-2 text-sm text-gray-400">Téléphone: {{ workspace.phoneNumber }}</p>
-        <button type="button" class="w-full flex items-center justify-center gap-3 mt-6 px-6 py-3 bg-[#007bff] hover:bg-[#006bff] text-base text-white font-semibold rounded-xl">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24">
-            <path d="M12 4.5C7.305 4.5 3.135 7.235 1.5 12c1.635 4.765 5.805 7.5 10.5 7.5s8.865-2.735 10.5-7.5c-1.635-4.765-5.805-7.5-10.5-7.5zm0 13c-3.59 0-6.5-2.91-6.5-6.5S8.41 4.5 12 4.5s6.5 2.91 6.5 6.5-2.91 6.5-6.5 6.5zm0-10c-1.93 0-3.5 1.57-3.5 3.5s1.57 3.5 3.5 3.5 3.5-1.57 3.5-3.5-1.57-3.5-3.5-3.5zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 9.5 12 9.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" data-original="#000000"></path>
-          </svg>
-          View
-        </button>
+      <div class="absolute mx-auto left-0 right-0 -bottom-80 group-hover:bottom-2 bg-white w-11/12 p-3 rounded-lg transition-all duration-300">
+        <div class="text-center">
+          <h3 class="text-base font-bold text-gray-800">{{ workspace.name }}</h3>
+          <p class="mt-2 text-sm text-gray-400">Email: {{ workspace.email }}</p>
+          <p class="mt-2 text-sm text-gray-400">Téléphone: {{ workspace.phoneNumber }}</p>
+          <!-- <p class="mt-2 text-sm text-gray-400">Owner: {{ workspace.owner }}</p> -->
+        </div>
       </div>
     </div>
   </div>
