@@ -26,6 +26,7 @@ export class ManagePatientsComponent implements OnInit {
   showDeleteConfirmation: boolean = false;
   detectionResult: string = '';
   selectedFile: File | null = null;
+  showDetectionConfirmation: boolean = false; // AJOUTE POUR GERER ÇA
 
   constructor(private patientService: PatientService, private detectionService: DetectionService, private authService: AuthService) {}
 

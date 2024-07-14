@@ -188,17 +188,17 @@ input:disabled {
 }
 
 .bttn.active {
-  background-color: #606FC7;
+  background-color: #2563EB;
   color: white;
   border-width: 1px;
-  border-color: #606FC7;
+  border-color: #2563EB;
 }
 
 .bttn__primary {
-  background-color: #606FC7;
+  background-color: #2563EB;
   color: white;
   border-width: 1px;
-  border-color: #606FC7;
+  border-color: #2563EB;
   border-radius: 0.25rem;
   font-size: 1.125rem;
   padding-left: 1.25rem;
