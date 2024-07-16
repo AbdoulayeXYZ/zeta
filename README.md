@@ -58,29 +58,6 @@ Ce projet est divisé en deux repositories principaux :
 
 3. Accédez à l'application dans votre navigateur à l'adresse `http://localhost:4200`
 
-## Structure du projet
-
-zeta/
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   └── server.js
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   ├── assets/
-│   │   └── environments/
-│   ├── angular.json
-│   └── package.json
-└── package.json
-brain-tumor-irm/
-├── data/
-├── models/
-├── scripts/
-└── requirements.txt
-
 
 ## Auteur
 - [Abdoulaye NIASSE](https://github.com/AbdoulayeXYZ)
