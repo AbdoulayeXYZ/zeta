@@ -1,6 +1,6 @@
 # SaaS pour la détection de tumeurs cérébrales par Deep Learning
 
-Ce projet est une plateforme SaaS (Software as a Service) utilisant le deep learning pour la détection de tumeurs cérébrales à partir d'images IRM. Il est construit avec la stack MEAN (MongoDB, Express.js, Angular, Node.js) et utilise un modèle YOLO V8 pour la détection et la classification des tumeurs.
+Ce projet est une plateforme SaaS (Software as a Service) utilisant le deep learning pour la détection de tumeurs cérébrales à partir d'images IRM. Il est construit avec la stack MEAN (MongoDB, Express.js, Angular, Node.js) et utilise un modèle YOLO-NAS pour la détection et la classification des tumeurs.
 
 ## Repositories
 
