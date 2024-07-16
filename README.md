@@ -1,27 +1,87 @@
-# ZetaFrontend
+# SaaS pour la détection de tumeurs cérébrales par Deep Learning
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.1.
+Ce projet est une plateforme SaaS (Software as a Service) utilisant le deep learning pour la détection de tumeurs cérébrales à partir d'images IRM. Il est construit avec la stack MEAN (MongoDB, Express.js, Angular, Node.js) et utilise un modèle YOLO V8 pour la détection et la classification des tumeurs.
 
-## Development server
+## Repositories
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Ce projet est divisé en deux repositories principaux :
 
-## Code scaffolding
+1. [brain-tumor-irm](https://github.com/AbdoulayeXYZ/brain-tumor-irm) : Contient les données d'entraînement et le modèle de deep learning.
+2. [zeta](https://github.com/AbdoulayeXYZ/zeta) : Contient le code source de la plateforme SaaS.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Fonctionnalités
 
-## Build
+- Détection et classification de trois types de tumeurs cérébrales : gliomes, méningiomes et tumeurs hypophysaires
+- Authentification sécurisée pour les hôpitaux, professionnels de santé et administrateurs
+- Téléversement et analyse des images IRM
+- Visualisation des résultats avec localisation et segmentation des tumeurs
+- Téléchargement direct des résultats d'analyse
+- Gestion des dossiers médicaux des patients
+- Collaboration et partage des résultats entre spécialistes
+- Transfert de dossiers médicaux entre différents Workspace
+- Administration technique des Workspace
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Prérequis
 
-## Running unit tests
+- Node.js (v14.0.0 ou supérieur)
+- MongoDB (v4.4 ou supérieur)
+- Angular CLI (v12.0.0 ou supérieur)
+- Python (v3.8 ou supérieur) pour le modèle de deep learning
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Installation
 
-## Running end-to-end tests
+1. Clonez les deux repositories :
+`git clone https://github.com/AbdoulayeXYZ/brain-tumor-irm.git`
+`git clone https://github.com/AbdoulayeXYZ/zeta.git`
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+2. Installez les dépendances pour le backend (dans le dossier `zeta`) :
+`cd zeta/backend`
+`npm install`
 
-## Further help
+3. Installez les dépendances pour le frontend (dans le dossier `zeta`) :
+`cd zeta/frontend`
+`npm install`
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+4. Configurez l'environnement :
+- Créez un fichier `.env` dans le dossier `backend` en vous basant sur le fichier `.env.example`
+- Configurez les variables d'environnement nécessaires (URL de la base de données, clés API, etc.)
+
+## Utilisation
+
+1. Démarrez le serveur backend :
+`cd zeta/backend`
+`npm run dev`
+
+2. Démarrez l'application frontend :
+`cd zeta/frontend`
+`ng serve`
+
+3. Accédez à l'application dans votre navigateur à l'adresse `http://localhost:4200`
+
+## Structure du projet
+
+zeta/
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   └── server.js
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   ├── assets/
+│   │   └── environments/
+│   ├── angular.json
+│   └── package.json
+└── package.json
+brain-tumor-irm/
+├── data/
+├── models/
+├── scripts/
+└── requirements.txt
+
+
+## Auteur
+- [Abdoulaye NIASSE](https://github.com/AbdoulayeXYZ)
+- [Mariama FALL](https://github.com/kalpafall)
