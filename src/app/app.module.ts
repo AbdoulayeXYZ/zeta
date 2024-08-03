@@ -24,7 +24,6 @@ import { SpecialistModule } from './specialist/specialist.module';
     SharedModule,
     HttpClientModule,
     ReactiveFormsModule,
-    CoreModule,
     AppRoutingModule,
     AdminModule,
     OwnerModule,

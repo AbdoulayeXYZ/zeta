@@ -13,9 +13,50 @@
       <a href="#" class="text-white hover:text-blue-600 transition-all duration-300 hover:underline">Contact</a>
       <a href="#" class="text-white hover:text-blue-600 transition-all duration-300 hover:underline">Blog</a>
     </nav>
-    <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">Login</button>
+    <button (click)="showLoginForm = !showLoginForm" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">Login</button>
   </div>
 </header>
+<div *ngIf="showLoginForm" class="fixed inset-0 p-4 flex flex-wrap justify-end items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.3)] overflow-auto font-[sans-serif]">
+  <div class="w-full max-w-lg bg-white bg-opacity-90 backdrop-blur-sm shadow-lg rounded-lg p-8 relative">
+      <i (click)="showLoginForm = false" class="fas fa-times w-3.5 cursor-pointer shrink-0 text-gray-400 hover:text-red-500 float-right"></i>
+
+      <div class="my-8 text-center">
+          <h4 class="text-3xl text-gray-800 font-extrabold">Sign In</h4>
+          <p class="text-sm text-gray-500 mt-4">Login to your account to continue the process</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+          <div class="relative flex items-center">
+              <input type="email" formControlName="email" placeholder="Enter Email"
+                  class="px-4 py-3 bg-white bg-opacity-70 text-gray-800 w-full text-sm border border-gray-300 focus:border-blue-600 outline-none rounded-lg" />
+              <i class="fas fa-envelope w-[18px] h-[18px] absolute right-4 text-gray-400"></i>
+          </div>
+
+          <div class="relative flex items-center">
+              <input type="password" formControlName="password" placeholder="Enter Password"
+                  class="px-4 py-3 bg-white bg-opacity-70 text-gray-800 w-full text-sm border border-gray-300 focus:border-blue-600 outline-none rounded-lg" />
+              <i class="fas fa-eye w-[18px] h-[18px] absolute right-4 cursor-pointer text-gray-400"></i>
+          </div>
+
+          <div class="flex">
+              <input type="checkbox" class="w-4" />
+              <label class="text-sm ml-4 text-gray-500">Remember me</label>
+          </div>
+
+          <button type="submit"
+              class="px-5 py-2.5 !mt-8 w-full bg-blue-600 bg-opacity-90 hover:bg-blue-700 text-white text-sm rounded-lg tracking-wide">Sign
+              in</button>
+      </form>
+
+      <a href="javascript:void(0)" class="text-sm text-blue-600 text-center mt-4 block hover:underline">Forgot Your
+          Password?</a>
+
+      <hr class="my-8 border-gray-300" />
+
+      <p class="text-sm text-center text-gray-500">Don't Have a Account? <a href="javascript:void(0)"
+          class="text-sm text-blue-600 hover:underline">Sign Up</a></p>
+  </div>
+</div>
 
 <main class="pt-0">
   <!--... contenu de la page... -->

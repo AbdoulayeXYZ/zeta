@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './core/components/login/login.component';
 import { SignupComponent } from './core/components/signup/signup.component';
 import { HomeComponent } from './core/components/home/home.component';
 import { TeamComponent } from './core/components/team/team.component';
@@ -36,10 +35,6 @@ const routes: Routes = [
     path: '',
     redirectTo: '/home',
     pathMatch: 'full',
-  },
-  {
-    path: 'login',
-    component: LoginComponent
   },
   {
     path: 'team',
