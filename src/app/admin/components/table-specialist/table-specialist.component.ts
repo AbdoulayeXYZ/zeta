@@ -4,9 +4,10 @@ import { UserService } from '../../../services/user.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-table-specialist',
-  templateUrl: './table-specialist.component.html',
-  styleUrl: './table-specialist.component.css'
+    selector: 'app-table-specialist',
+    templateUrl: './table-specialist.component.html',
+    styleUrl: './table-specialist.component.css',
+    standalone: false
 })
 
 

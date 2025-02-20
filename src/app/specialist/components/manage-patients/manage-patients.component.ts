@@ -6,9 +6,10 @@ import { IDetection } from '../../../models/detection.model';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-manage-patients',
-  templateUrl: './manage-patients.component.html',
-  styleUrls: ['./manage-patients.component.css']
+    selector: 'app-manage-patients',
+    templateUrl: './manage-patients.component.html',
+    styleUrls: ['./manage-patients.component.css'],
+    standalone: false
 })
 export class ManagePatientsComponent implements OnInit {
   patients: IPatient[] = [];

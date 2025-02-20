@@ -1,9 +1,10 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css'],
+    standalone: false
 })
 export class HeaderComponent implements AfterViewInit {
   @ViewChild('toggleOpen', { static: false }) toggleOpen: ElementRef | undefined;

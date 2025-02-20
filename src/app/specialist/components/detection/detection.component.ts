@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import $ from 'jquery';
 
 @Component({
-  selector: 'app-detection',
-  templateUrl: './detection.component.html',
-  styleUrls: ['./detection.component.css']
+    selector: 'app-detection',
+    templateUrl: './detection.component.html',
+    styleUrls: ['./detection.component.css'],
+    standalone: false
 })
 export class DetectionComponent implements OnInit {
 

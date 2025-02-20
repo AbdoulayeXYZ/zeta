@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-tab-nav',
-  templateUrl: './tab-nav.component.html',
-  styleUrl: './tab-nav.component.css',
+    selector: 'app-tab-nav',
+    templateUrl: './tab-nav.component.html',
+    styleUrl: './tab-nav.component.css',
+    standalone: false
 })
 export class TabNavComponent {
   @Input() tabsArr: string[] = [];

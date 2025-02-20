@@ -1,9 +1,10 @@
 import { Component, AfterViewInit } from '@angular/core';
 
 @Component({
-  selector: 'app-infomodel',
-  templateUrl: './infomodel.component.html',
-  styleUrls: ['./infomodel.component.css']
+    selector: 'app-infomodel',
+    templateUrl: './infomodel.component.html',
+    styleUrls: ['./infomodel.component.css'],
+    standalone: false
 })
 export class InfomodelComponent implements AfterViewInit {
 

@@ -4,9 +4,10 @@ import { WorkspaceService } from '../../../services/workspace.service';
 import { IWorkspace } from '../../../models/workspace.model';
 
 @Component({
-  selector: 'app-workspace',
-  templateUrl: './workspace.component.html',
-  styleUrls: ['./workspace.component.css']
+    selector: 'app-workspace',
+    templateUrl: './workspace.component.html',
+    styleUrls: ['./workspace.component.css'],
+    standalone: false
 })
 export class WorkspaceComponent implements OnInit {
   workspaces: IWorkspace[] = [];

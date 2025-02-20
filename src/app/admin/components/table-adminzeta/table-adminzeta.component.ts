@@ -4,9 +4,10 @@ import { UserService } from '../../../services/user.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-table-adminzeta',
-  templateUrl: './table-adminzeta.component.html',
-  styleUrl: './table-adminzeta.component.css'
+    selector: 'app-table-adminzeta',
+    templateUrl: './table-adminzeta.component.html',
+    styleUrl: './table-adminzeta.component.css',
+    standalone: false
 })
 
 export class TableAdminzetaComponent implements OnInit {

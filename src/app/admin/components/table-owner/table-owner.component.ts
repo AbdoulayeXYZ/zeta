@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../services/user.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 @Component({
-  selector: 'app-table-owner',
-  templateUrl: './table-owner.component.html',
-  styleUrl: './table-owner.component.css'
+    selector: 'app-table-owner',
+    templateUrl: './table-owner.component.html',
+    styleUrl: './table-owner.component.css',
+    standalone: false
 })
 
 export class TableOwnerComponent implements OnInit {

@@ -4,9 +4,10 @@ import { UserService } from '../../../services/user.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-table-user',
-  templateUrl: './table-user.component.html',
-  styleUrls: ['./table-user.component.css']
+    selector: 'app-table-user',
+    templateUrl: './table-user.component.html',
+    styleUrls: ['./table-user.component.css'],
+    standalone: false
 })
 export class TableUserComponent implements OnInit {
   users: User[] = [];

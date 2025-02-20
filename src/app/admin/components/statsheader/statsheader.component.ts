@@ -1,9 +1,10 @@
 import { Component, AfterViewInit } from '@angular/core';
 
 @Component({
-  selector: 'app-statsheader',
-  templateUrl: './statsheader.component.html',
-  styleUrls: ['./statsheader.component.css']
+    selector: 'app-statsheader',
+    templateUrl: './statsheader.component.html',
+    styleUrls: ['./statsheader.component.css'],
+    standalone: false
 })
 export class StatsheaderComponent implements AfterViewInit {
 

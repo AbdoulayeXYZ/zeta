@@ -7,9 +7,10 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-manageuser',
-  templateUrl: './manageuser.component.html',
-  styleUrls: ['./manageuser.component.css']
+    selector: 'app-manageuser',
+    templateUrl: './manageuser.component.html',
+    styleUrls: ['./manageuser.component.css'],
+    standalone: false
 })
 export class ManageuserComponent implements OnInit {
   specialists: User[] = [];
