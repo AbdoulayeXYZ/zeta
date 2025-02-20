@@ -34,6 +34,8 @@ const userSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     type: { type: String, enum: [role_util_1.ROLE.ADMIN, role_util_1.ROLE.OWNER, role_util_1.ROLE.SPECIALIST], required: true },
+    speciality: { type: String },
+    ownerID: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'users' }]
 });
 userSchema.plugin(mongoose_unique_validator_1.default);
 exports.default = mongoose_1.default.model('users', userSchema);

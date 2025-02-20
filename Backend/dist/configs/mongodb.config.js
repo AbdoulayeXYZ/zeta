@@ -39,13 +39,17 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const connectMongoDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const MONGODB_URI = process.env.MONGO_DB_URI || 'mongodb+srv://niasseabdoulaye64:UO8ynCOLvDCCuAJj@cfpt.elwuwtg.mongodb.net/?retryWrites=true&w=majority&appName=CFPT';
+    const mongoUri = process.env.MONGO_DB_URI;
+    if (!mongoUri) {
+        console.error('MONGO_DB_URI is not defined in the environment variables');
+        process.exit(1);
+    }
     try {
-        yield mongoose_1.default.connect(MONGODB_URI);
-        console.log("MongoDB connected successfully.");
+        yield mongoose_1.default.connect(mongoUri);
+        console.log('Connected to MongoDB');
     }
     catch (error) {
-        console.error("MongoDB connection failed:", error);
+        console.error('Error connecting to MongoDB:', error.message);
         process.exit(1);
     }
 });

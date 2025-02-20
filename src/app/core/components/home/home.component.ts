@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service'; // Assurez-vous que le chemin est correct
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common'; // Import the CommonModule
 
 interface LoginResponse {
   token: string;
@@ -14,8 +15,7 @@ interface LoginResponse {
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css'],
-    standalone: false
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
   hospitals: number = 0;

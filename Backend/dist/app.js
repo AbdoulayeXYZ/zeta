@@ -32,7 +32,9 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const user_route_1 = __importDefault(require("./routes/user.route"));
 const cors_1 = __importDefault(require("cors"));
 const workspace_route_1 = __importDefault(require("./routes/workspace.route"));
+const patient_route_1 = __importDefault(require("./routes/patient.route"));
 const mongodb_config_1 = __importDefault(require("./configs/mongodb.config"));
+const detection_route_1 = __importDefault(require("./routes/detection.route"));
 dotenv.config();
 (0, mongodb_config_1.default)();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +48,8 @@ app.use(body_parser_1.default.json());
 // Routes
 app.use(`/${process.env.API_PREFIX}/users`, user_route_1.default);
 app.use("/api", workspace_route_1.default);
+app.use("/api", patient_route_1.default);
+app.use("/api", detection_route_1.default);
 // Basic route for testing
 app.get('/', (req, res) => {
     res.send('Hello from Express server!');
