@@ -19,7 +19,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
     declarations: [
         SignupComponent,
-        HomeComponent,
         HeroSectionComponent,
         FeaturesComponent,
         UnlockPremiumComponent,
@@ -30,14 +29,14 @@ import { ReactiveFormsModule } from '@angular/forms';
         NavbarComponent
     ],
     exports: [
-        HomeComponent,
         NavbarComponent
     ],
     imports: [
         CommonModule,
         SharedModule,
         BrowserModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        HomeComponent
     ]
 })
 export class CoreModule { }

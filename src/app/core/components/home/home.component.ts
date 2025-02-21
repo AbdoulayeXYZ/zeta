@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service'; // Assurez-vous que le chemin est correct
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; // Import the CommonModule
+import { ReactiveFormsModule } from '@angular/forms';
 
 interface LoginResponse {
   token: string;
@@ -15,7 +16,9 @@ interface LoginResponse {
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+    styleUrls: ['./home.component.css'],
+    standalone: true,
+    imports: [CommonModule, ReactiveFormsModule]
 })
 export class HomeComponent implements OnInit {
   hospitals: number = 0;
