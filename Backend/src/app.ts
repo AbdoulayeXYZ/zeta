@@ -9,6 +9,7 @@ import workspaceRoutes from './routes/workspace.route';
 import patientRoutes from './routes/patient.route'
 import connectMongoDB from './configs/mongodb.config';
 import detectionRoutes from './routes/detection.route';
+import path from 'path';
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(bodyParser.json());
+
+// Expose uploads directory as static
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use(`/${process.env.API_PREFIX}/users`, userRoutes);

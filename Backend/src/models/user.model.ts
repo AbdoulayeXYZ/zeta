@@ -9,7 +9,8 @@ export interface IUser extends Document {
     password: string;
     type: string;
     speciality: string;
-    ownerID: IUser[],
+    ownerID: IUser[];
+    workspace?: mongoose.Types.ObjectId; // Optional workspace reference
 }
 
 const userSchema: Schema = new Schema({
@@ -18,8 +19,8 @@ const userSchema: Schema = new Schema({
     password: {type: String, required: true},
     type: {type: String, enum: [ROLE.ADMIN, ROLE.OWNER, ROLE.SPECIALIST], required: true},
     speciality: {type: String},
-    ownerID: [{ type: Schema.Types.ObjectId, ref: 'users' }]
-
+    ownerID: [{ type: Schema.Types.ObjectId, ref: 'users' }],
+    workspace: { type: Schema.Types.ObjectId, ref: 'workspaces' } // Reference to workspace
 });
 
 userSchema.plugin(uniqueValidator);

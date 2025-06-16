@@ -21,7 +21,14 @@ export const AddUser = async (userData: IUser) => {
 
 export const login = async (email: string, password: string) => {
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email })
+            .populate({
+                path: 'ownerID',
+                populate: {
+                    path: 'workspace',
+                    model: 'workspaces'
+                }
+            });
 
         if (!user) {
             return { success: false, message: "User not found." };
@@ -33,14 +40,20 @@ export const login = async (email: string, password: string) => {
             return { success: false, message: "Invalid password." };
         }
 
+        // Si c'est un spécialiste, on récupère le workspace de son owner
+        if (user.type === 'Specialist' && user.ownerID && user.ownerID.length > 0) {
+            const owner = user.ownerID[0];
+            if (owner && owner.workspace) {
+                user.workspace = owner.workspace;
+            }
+        }
+
         return { success: true, message: "Login successful.", user };
     } catch (error) {
         const message = (error instanceof Error) ? error.message : 'An unknown error occurred';
         return { success: false, message };
     }
 };
-
-
 
 export const createUser = async (userData: IUser) => {
     const user = new User(userData);

@@ -70,16 +70,37 @@ export const login = async (request: Request, response: Response) => {
 
         const authenticatedUser = await service.login(loginEmail, password);
 
-        if (!authenticatedUser) {
+        if (!authenticatedUser.success) {
             return response.status(401).json({
-                message: "Invalid email and/or password"
-            })
+                message: authenticatedUser.message
+            });
         }
 
-        const { _id, fullName, email, type } = authenticatedUser.user!;
+        if (!authenticatedUser.user) {
+            return response.status(401).json({
+                message: "User not found"
+            });
+        }
+
+        const { _id, fullName, email, type } = authenticatedUser.user;
+
+        // Create response object without sensitive data
+        const userResponse = {
+            _id: authenticatedUser.user._id,
+            fullName: authenticatedUser.user.fullName,
+            email: authenticatedUser.user.email,
+            type: authenticatedUser.user.type,
+            speciality: authenticatedUser.user.speciality,
+            workspace: authenticatedUser.user.workspace || null,
+            ownerID: authenticatedUser.user.ownerID ? authenticatedUser.user.ownerID.map((owner: any) => ({
+                _id: owner._id,
+                fullName: owner.fullName,
+                workspace: owner.workspace
+            })) : []
+        };
 
         return response.status(200).json({
-            user: authenticatedUser.user,
+            user: userResponse,
             token: jwt.sign({
                 userId: _id,
                 fullName,
@@ -90,10 +111,10 @@ export const login = async (request: Request, response: Response) => {
             })
         });
     } catch (error) {
-        console.log(error);
+        console.error('Login error:', error);
         response.status(500).json({
-            message: error
-        })
+            message: "An error occurred during login"
+        });
     }
 };
 

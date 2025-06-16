@@ -1,0 +1,165 @@
+<!-- Chatbot Container -->
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 pt-[100px]">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Zetabot</h1>
+          <p class="mt-2 text-sm text-gray-600">Your AI medical assistant. Ask me anything about medical conditions, treatments, or general health advice.</p>
+        </div>
+        <div class="flex space-x-4">
+          <!-- PDF Upload Button -->
+          <div class="relative">
+            <input #fileInput
+                   type="file"
+                   accept=".pdf"
+                   (change)="handleFileUpload($event)"
+                   class="hidden"
+                   [disabled]="isProcessing || !currentConversation">
+            <button (click)="fileInput.click()"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    [disabled]="isProcessing || !currentConversation">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+              </svg>
+              Upload PDF
+            </button>
+          </div>
+          <!-- Clear PDF Context Button -->
+          <button *ngIf="uploadedPdfContext"
+                  (click)="clearPdfContext()"
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  [disabled]="isProcessing">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            Clear PDF
+          </button>
+          <!-- New Chat Button -->
+          <button (click)="createNewConversation()" 
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            New Chat
+          </button>
+        </div>
+      </div>
+      <!-- PDF Context Indicator -->
+      <div *ngIf="uploadedPdfContext" class="mt-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-sm text-blue-700">Using PDF context: {{ selectedFileName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-6">
+      <!-- Conversations Sidebar -->
+      <div class="w-64 flex-shrink-0">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="p-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Conversations</h2>
+          </div>
+          <div class="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
+            <div *ngFor="let conversation of conversations" 
+                 (click)="loadConversation(conversation.id)"
+                 [class.bg-blue-50]="currentConversation?.id === conversation.id"
+                 class="p-4 hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+              <div class="flex justify-between items-start">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">{{ conversation.title }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ conversation.updatedAt | date:'short' }}</p>
+                </div>
+                <button (click)="deleteConversation(conversation.id); $event.stopPropagation()" 
+                        class="ml-2 text-gray-400 hover:text-red-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Container -->
+      <div class="flex-1">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <!-- Chat Messages -->
+          <div class="h-[600px] overflow-y-auto p-6 space-y-4" #chatContainer>
+            <!-- Welcome Message -->
+            <div *ngIf="!currentConversation" class="flex items-start space-x-3">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1 bg-gray-100 rounded-lg px-4 py-2">
+                <p class="text-sm text-gray-900">Hello! I'm Zetabot, your AI medical assistant. How can I help you today?</p>
+              </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div *ngFor="let message of currentConversation?.messages" 
+                 class="flex items-start space-x-3" 
+                 [ngClass]="{'justify-end': message.isUser}">
+              <!-- Bot Avatar -->
+              <div class="flex-shrink-0" *ngIf="!message.isUser">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Message Content -->
+              <div class="flex-1" [ngClass]="{'flex justify-end': message.isUser}">
+                <div class="px-4 py-2 rounded-lg max-w-[80%]" 
+                     [ngClass]="message.isUser ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'">
+                  <p class="text-sm">{{ message.content }}</p>
+                  <span class="text-xs opacity-75 mt-1 block">{{ message.timestamp | date:'shortTime' }}</span>
+                </div>
+              </div>
+
+              <!-- User Avatar -->
+              <div class="flex-shrink-0" *ngIf="message.isUser">
+                <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Form -->
+          <div class="border-t border-gray-200 p-4">
+            <form (ngSubmit)="sendMessage()" class="flex space-x-4">
+              <input type="text" 
+                     [(ngModel)]="newMessage" 
+                     name="message"
+                     placeholder="Type your message here..." 
+                     class="flex-1 min-w-0 block w-full px-4 py-2 text-gray-900 placeholder-gray-400 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                     [disabled]="isProcessing || !currentConversation">
+              <button type="submit" 
+                      class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+                      [disabled]="!newMessage.trim() || isProcessing || !currentConversation">
+                <span *ngIf="!isProcessing">Send</span>
+                <svg *ngIf="isProcessing" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

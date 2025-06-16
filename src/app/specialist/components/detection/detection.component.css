@@ -278,3 +278,87 @@ input:disabled {
 #resultContainer {
   display: none;
 }
+
+/* Custom styles for the detection component */
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+.aspect-w-16 > * {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* Drag and drop styles */
+.border-dashed {
+  border: 2px dashed #e5e7eb;
+  transition: all 0.2s ease-in-out;
+}
+
+.border-dashed:hover,
+.border-dashed.border-indigo-500 {
+  border-color: #6366f1;
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Toast customization */
+::ng-deep .toast-container {
+  z-index: 9999;
+}
+
+::ng-deep .toast-success {
+  background-color: #10b981;
+}
+
+::ng-deep .toast-error {
+  background-color: #ef4444;
+}
+
+::ng-deep .toast-warning {
+  background-color: #f59e0b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .max-w-7xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Custom scrollbar for JSON viewer */
+pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

@@ -25,6 +25,16 @@
       
 		<div class="content">
 			<div class="content__grid">
+				<div class="col-12">
+					<label class="input__label" for="patient">Select Patient</label>
+					<select id="patient" class="input" required (change)="onPatientChange($event)">
+						<option value="">Select a patient</option>
+						<option *ngFor="let patient of patients" [value]="patient._id">
+							{{patient.fullName}} ({{patient.age}} years, {{patient.sexe}})
+						</option>
+					</select>
+				</div>
+
 				<div class="col-12-s6-m4" id="method">
 					<label class="input__label">Upload Method</label>
 					<div>
@@ -37,15 +47,15 @@
 					<label class="input__label" for="file">Select File</label>
 					<div class="flex">
 						<input class="input input--left flex-1" type="text" id="fileName" disabled />							
-						<button id="fileMock" class="bttn right active">Browse</button>
+						<button type="button" (click)="fileInput.click()" class="bttn right active">Browse</button>
 					</div>
-					<input style="display: none;" type="file" id="file" />
+					<input #fileInput style="display: none;" type="file" accept="image/*" (change)="onFileSelected($event)" />
 				</div>
 
-				<div class="col-12-m8" id="urlContainer">
-					<label class="input__label" for="file">Enter Image URL</label>
+				<div class="col-12-m8" id="urlContainer" style="display: none;">
+					<label class="input__label" for="url">Enter Image URL</label>
 					<div class="flex">
-						<input type="text" id="url" placeholder="https://path.to/your.jpg" class="input"/><br>
+						<input type="url" id="url" placeholder="https://path.to/your.jpg" class="input"/><br>
 					</div>
 				</div>
         
@@ -94,20 +104,98 @@
 						</div>
 					</div>
 				</div>
+
+				<!-- Image Preview Section -->
+				<div class="col-12 mt-4" *ngIf="previewImageUrl">
+					<div class="preview-container p-4 border rounded-lg">
+						<h4 class="text-lg font-semibold mb-2">Image Preview</h4>
+						<div class="relative">
+							<img #previewImage 
+								 [src]="previewImageUrl" 
+								 alt="Preview" 
+								 class="max-w-full h-auto max-h-96 object-contain rounded bg-gray-100"
+								 (error)="previewImageUrl = null">
+						</div>
+					</div>
+				</div>
+
 				<div class="col-12">
-					<button type="submit" value="Run Inference" class="bttn__primary">Run Inference</button>
+					<button type="submit" 
+							value="Run Inference" 
+							class="bttn__primary" 
+							[disabled]="isProcessing || (!selectedFile && !selectedImageUrl)">
+						<span *ngIf="!isProcessing">Run Inference</span>
+						<span *ngIf="isProcessing">
+							<i class="fas fa-spinner fa-spin"></i> Processing...
+						</span>
+					</button>
 				</div>
 			</div>
 			<div class="result" id="resultContainer">
 				<div class="divider"></div>
-				<div class="result__header">
-					<h3 class="headline">Result</h3>
+				<!-- <div class="result__header">
+					<h3 class="headline">Current Detection Result</h3>
 					<a href="#">Copy Code</a>
 				</div>
-				<pre id="output" class="codeblock"> here is your json </pre>
+				<pre id="output" class="codeblock">Select a patient and run detection to see results</pre>
 				<div class="result__pdf">
 					<embed src="assets/resultat_safietou_sall_ndiaye.pdf" width="800" height="500" type="application/pdf">
 					<a href="assets/resultat_safietou_sall_ndiaye.pdf" download="resultat_safietou_sall_ndiaye.pdf" class="bttn__primary">Télécharger le résultat</a>
+				</div> -->
+
+				<!-- Patient Detection History -->
+				<div *ngIf="selectedPatientId && patientDetections.length > 0" class="mt-8">
+					<div class="divider"></div>
+					<div class="result__header">
+						<h3 class="headline">Detection History</h3>
+					</div>
+					<div class="detection-history">
+						<div *ngFor="let detection of patientDetections" class="detection-item p-4 border rounded-lg mb-4">
+							<div class="flex justify-between items-center mb-2">
+								<span class="text-sm text-gray-600">
+									{{detection.detectionDate | date:'medium'}}
+								</span>
+								<div class="space-x-2">
+									<button (click)="viewDetectionDetails(detection)" class="text-indigo-600 hover:text-indigo-800">
+										View Details
+									</button>
+									<button (click)="downloadDetectionPDF(detection)" class="text-green-600 hover:text-green-800">
+										<i class="fas fa-file-pdf mr-1"></i>Download PDF
+									</button>
+								</div>
+							</div>
+							<div class="grid grid-cols-2 gap-4">
+								<div class="relative">
+									<img *ngIf="detection.image" 
+										 [src]="getImageUrl(detection.image)" 
+										 alt="Detection Image" 
+										 class="w-full h-48 object-contain rounded bg-gray-100"
+										 (error)="detection.image = null">
+									<div *ngIf="!detection.image" 
+										 class="w-full h-48 flex items-center justify-center bg-gray-100 rounded">
+										<span class="text-gray-500">No image available</span>
+									</div>
+								</div>
+								<div class="text-sm">
+									<p><strong>Confidence:</strong> {{ detection.results?.confidence !== undefined ? detection.results.confidence + '%' : 'N/A' }}</p>
+									<p><strong>Overlap:</strong> {{ detection.results?.overlap !== undefined ? detection.results.overlap + '%' : 'N/A' }}</p>
+									<p><strong>Classes Detected:</strong></p>
+									<ul class="list-disc list-inside">
+										<li *ngFor="let class of detection.results?.classes">{{class}}</li>
+										<li *ngIf="!detection.results?.classes || detection.results.classes.length === 0">None</li>
+									</ul>
+									<div *ngIf="detection.results?.jsonResult" class="mt-2">
+										<button (click)="toggleJsonResult(detection)" class="text-indigo-600 hover:text-indigo-800">
+											{{detection.showJson ? 'Hide' : 'Show'}} JSON Result
+										</button>
+										<pre *ngIf="detection.showJson" class="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
+											{{detection.results.jsonResult | json}}
+										</pre>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -11,11 +11,27 @@ class PatientService {
     }
 
     async getPatients() {
-        return await Patient.find().populate('specialist workspace');
+        return await Patient.find().populate({
+            path: 'specialist',
+            populate: {
+                path: 'ownerID',
+                populate: {
+                    path: 'workspace'
+                }
+            }
+        });
     }
 
     async getPatientById(id: string) {
-        return await Patient.findById(id).populate('specialist workspace');
+        return await Patient.findById(id).populate({
+            path: 'specialist',
+            populate: {
+                path: 'ownerID',
+                populate: {
+                    path: 'workspace'
+                }
+            }
+        });
     }
 
     async updatePatient(id: string, data: Partial<IPatient>) {

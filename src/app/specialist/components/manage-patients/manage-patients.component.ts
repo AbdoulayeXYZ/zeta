@@ -4,6 +4,7 @@ import { DetectionService } from '../../../services/detection.service';
 import { IPatient } from '../../../models/patient.model';
 import { IDetection } from '../../../models/detection.model';
 import { AuthService } from '../../../services/auth.service';
+import { User } from '../../../models/user.model';
 
 @Component({
     selector: 'app-manage-patients',
@@ -14,17 +15,22 @@ import { AuthService } from '../../../services/auth.service';
 export class ManagePatientsComponent implements OnInit {
   patients: IPatient[] = [];
   selectedPatient: IPatient | null = null;
+  selectedPatientForDelete: IPatient | null = null;
+  selectedPatientForHistory: IPatient | null = null;
+  showCreateForm: boolean = false;
+  showDeleteConfirmation: boolean = false;
+  showDetectionHistory: boolean = false;
+  patientDetections: IDetection[] = [];
+  selectedDetection: IDetection | null = null;
   newPatient: IPatient = {
     _id: '',
     fullName: '',
     age: 0,
     sexe: '',
     createdAt: new Date(),
-    specialist: '',
-    workspace: ''
+    specialist: ''
   };
   showUploadPopup: boolean = false;
-  showDeleteConfirmation: boolean = false;
   detectionResult: string = '';
   selectedFile: File | null = null;
   showDetectionConfirmation: boolean = false; // AJOUTE POUR GERER ÇA
@@ -51,12 +57,16 @@ export class ManagePatientsComponent implements OnInit {
 
   createPatient(): void {
     const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || !currentUser._id) {
+      console.error('Current user information is missing');
+      return;
+    }
+
     const newPatientData: Partial<IPatient> = {
       fullName: this.newPatient.fullName,
       age: this.newPatient.age,
       sexe: this.newPatient.sexe,
-      specialist: currentUser._id, // Use the ID of the logged-in specialist
-      workspace: currentUser.workspace // Use the workspace of the logged-in specialist
+      specialist: currentUser._id
     };
 
     this.patientService.createPatient(newPatientData).subscribe(
@@ -68,11 +78,13 @@ export class ManagePatientsComponent implements OnInit {
           age: 0,
           sexe: '',
           createdAt: new Date(),
-          specialist: '',
-          workspace: ''
+          specialist: ''
         };
       },
-      (error) => console.error('Error creating patient:', error)
+      (error) => {
+        console.error('Error creating patient:', error);
+        console.log('Attempted to create patient with data:', newPatientData);
+      }
     );
   }
 
@@ -134,5 +146,45 @@ export class ManagePatientsComponent implements OnInit {
       },
       (error) => console.error('Error creating detection:', error)
     );
+  }
+
+  viewPatientDetections(patient: IPatient): void {
+    this.selectedPatientForHistory = patient;
+    this.showDetectionHistory = true;
+    this.loadPatientDetections(patient._id);
+  }
+
+  closeDetectionHistory(): void {
+    this.showDetectionHistory = false;
+    this.selectedPatientForHistory = null;
+    this.patientDetections = [];
+    this.selectedDetection = null;
+  }
+
+  loadPatientDetections(patientId: string): void {
+    this.detectionService.getDetectionsByPatient(patientId).subscribe(
+      (detections) => {
+        this.patientDetections = detections;
+        // Sort detections by date, most recent first
+        this.patientDetections.sort((a, b) => 
+          new Date(b.detectionDate).getTime() - new Date(a.detectionDate).getTime()
+        );
+      },
+      (error) => {
+        console.error('Error loading patient detections:', error);
+        // You might want to show an error message to the user here
+      }
+    );
+  }
+
+  viewDetectionDetails(detection: IDetection): void {
+    this.selectedDetection = detection;
+  }
+
+  getSpecialistName(specialist: User | string | null): string {
+    if (specialist && typeof specialist === 'object' && 'fullName' in specialist) {
+      return specialist.fullName;
+    }
+    return 'Unknown';
   }
 }

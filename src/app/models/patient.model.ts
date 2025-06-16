@@ -5,5 +5,4 @@ export interface IPatient {
     sexe: string;
     createdAt: Date;
     specialist: string; // IUser['_id']
-    workspace: string; // IWorkspace['_id']
 }

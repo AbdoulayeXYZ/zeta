@@ -4,6 +4,7 @@ import { SpecialistComponent } from './specialist.component';
 import { DashspecialistComponent } from './components/dashspecialist/dashspecialist.component';
 import { ManagePatientsComponent } from './components/manage-patients/manage-patients.component';
 import { DetectionComponent } from './components/detection/detection.component';
+import { ChatbotComponent } from './components/chatbot/chatbot.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
       {
         path: 'detection',
         component: DetectionComponent,
+      },
+      {
+        path: 'chatbot',
+        component: ChatbotComponent,
       },
     ],
   },

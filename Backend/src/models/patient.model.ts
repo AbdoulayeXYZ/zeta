@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { IUser } from "./user.model";
-import { IWorkspace } from "./workspace.model";
 
 export interface IPatient extends Document {
     fullName: string;
@@ -8,7 +7,6 @@ export interface IPatient extends Document {
     sexe: string;
     createdAt: Date;
     specialist: IUser['_id'];
-    workspace: IWorkspace['_id'];
 }
 
 const patientSchema: Schema = new Schema({
@@ -16,8 +14,7 @@ const patientSchema: Schema = new Schema({
     age: { type: Number, required: true },
     sexe: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
-    specialist: { type: Schema.Types.ObjectId, ref: 'users', required: true },
-    workspace: { type: Schema.Types.ObjectId, ref: 'workspaces', required: true }
+    specialist: { type: Schema.Types.ObjectId, ref: 'users', required: true }
 });
 
 export default mongoose.model<IPatient>('patients', patientSchema);
