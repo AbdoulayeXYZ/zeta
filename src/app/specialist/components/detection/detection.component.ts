@@ -954,7 +954,7 @@ Response: ${xhr.responseText || 'No response'}</pre>
     const formData = new FormData();
     formData.append('image', this.selectedFile); // 'image' doit matcher le backend
 
-    this.http.post('http://localhost:3000/api/upload', formData).subscribe({
+    this.http.post('http://localhost:3000/api/detections', formData).subscribe({
       next: (res) => {
         alert('Fichier envoyé avec succès !');
         // ... autres actions si besoin

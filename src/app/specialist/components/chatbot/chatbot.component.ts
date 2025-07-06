@@ -2,10 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@ang
 import { ChatHistoryService, Conversation, ChatMessage } from '../../../services/chat-history.service';
 import { OllamaService } from '../../../services/ollama.service';
 import { firstValueFrom } from 'rxjs';
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-chatbot',
@@ -26,7 +23,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
 
   constructor(
     private chatHistoryService: ChatHistoryService,
-    private ollamaService: OllamaService
+    private ollamaService: OllamaService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -69,39 +67,29 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     if (!input.files?.length) return;
 
     const file = input.files[0];
-    if (file.type !== 'application/pdf') {
-      alert('Please upload a PDF file');
-      return;
-    }
 
     this.selectedFileName = file.name;
     this.isProcessing = true;
 
     try {
-      // Extraction du texte du PDF avec pdf.js
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await (pdfjsLib as any).getDocument({ data: arrayBuffer }).promise;
-      let fullText = '';
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        const pageText = content.items.map((item: any) => item.str).join(' ');
-        fullText += pageText + '\n';
-      }
-      this.uploadedPdfContext = fullText;
+      // Upload du fichier vers le backend pour extraction texte (PDF ou image)
+      const formData = new FormData();
+      formData.append('file', file);
+      const res: any = await this.http.post('http://localhost:3000/api/detections/upload', formData).toPromise();
+      this.uploadedPdfContext = res.text;
 
       // Add a system message about the uploaded file
       if (this.currentConversation) {
         const systemMessage: ChatMessage = {
-          content: `PDF file "${file.name}" has been uploaded and will be used as context for this conversation.`,
+          content: `File "${file.name}" has been uploaded and its content will be used as context for this conversation.`,
           isUser: false,
           timestamp: new Date()
         };
         this.chatHistoryService.addMessage(this.currentConversation.id, systemMessage);
       }
     } catch (error) {
-      console.error('Error processing PDF:', error);
-      alert('Error processing PDF file. Please try again.');
+      console.error('Error processing file:', error);
+      alert('Error processing file. Please try again.');
     } finally {
       this.isProcessing = false;
       // Reset the file input

@@ -127,13 +127,16 @@ input:disabled {
 }
 
 .input {
-  border-width: 1px;
-  border-color: #cbd5e0;
-  border-radius: 0.25rem;
-  height: 2.5rem;
-  width: 100%;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.input:focus {
+  border-color: #a78bfa;
 }
 
 .input--left {
@@ -866,4 +869,20 @@ pre::-webkit-scrollbar-thumb:hover {
   .roboflow-detection-result .detection-title {
     font-size: 1.75rem;
   }
+}
+
+/* Ajouts pour un style Roboflow-like, complémentaire à Tailwind */
+pre {
+  background: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+/* Pour la bounding box si besoin d'ajustement */
+.bounding-box {
+  border: 2px solid #facc15;
+  position: absolute;
+  pointer-events: none;
 }

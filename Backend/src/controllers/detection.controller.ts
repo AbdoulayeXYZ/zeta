@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import Detection from '../models/detection.model';
+import pdfParse from 'pdf-parse';
+import Tesseract from 'tesseract.js';
+import fs from 'fs';
+import path from 'path';
 
 export const createDetection = async (req: Request, res: Response) => {
     try {
@@ -86,5 +90,51 @@ export const getDetectionById = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error fetching detection:', error as Error);
         res.status(500).json({ error: (error as Error).message });
+    }
+};
+
+export const uploadAndExtract = async (req: Request, res: Response) => {
+    try {
+        const file = req.file;
+        let extractedText = '';
+
+        if (!file) {
+            return res.status(400).json({ error: 'No file uploaded.' });
+        }
+
+        console.log('Processing file:', file.originalname, 'MIME type:', file.mimetype);
+
+        if (file.mimetype === 'application/pdf') {
+            // PDF: extraction texte
+            const dataBuffer = fs.readFileSync(file.path);
+            const data = await pdfParse(dataBuffer);
+            extractedText = data.text;
+        } else if (file.mimetype.startsWith('image/')) {
+            // Image: OCR
+            const imagePath = path.resolve(file.path);
+            const { data: { text } } = await Tesseract.recognize(imagePath, 'eng');
+            extractedText = text;
+        } else {
+            // Clean up unsupported file
+            if (fs.existsSync(file.path)) {
+                fs.unlinkSync(file.path);
+            }
+            return res.status(400).json({ error: 'Unsupported file type.' });
+        }
+
+        // Clean up the temporary file after successful processing
+        if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+        }
+
+        // Return the extracted text
+        res.json({ text: extractedText });
+    } catch (err) {
+        // Clean up file in case of error
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        console.error('Error in uploadAndExtract:', err);
+        res.status(500).json({ error: 'Error processing file.', details: (err as Error).message });
     }
 };
