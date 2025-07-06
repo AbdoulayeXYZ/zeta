@@ -1,7 +1,19 @@
-<div class="specialist-container">
-    <app-sidebarspecialist class="sidebarspecialist"></app-sidebarspecialist>
-    <app-headerspecialist class="headerspecialist"></app-headerspecialist>
-    <div class="contentspecialist">
-        <router-outlet></router-outlet>
+<div class="specialist-layout">
+    <!-- Sidebar -->
+    <div class="sidebar-container">
+        <app-sidebarspecialist></app-sidebarspecialist>
+    </div>
+    
+    <!-- Main Content Area -->
+    <div class="main-content-area">
+        <!-- Header -->
+        <div class="header-container">
+            <app-headerspecialist></app-headerspecialist>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="page-content">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>

@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { PatientService } from '../../../services/patient.service';
 import { DetectionService } from '../../../services/detection.service';
 import { AuthService } from '../../../services/auth.service';
+import { RoboflowVisualizationService, ProcessedDetectionResult } from '../../../services/roboflow-visualization.service';
 import { IPatient } from '../../../models/patient.model';
 import { IDetection } from '../../../models/detection.model';
 import $ from 'jquery';
@@ -35,6 +36,7 @@ export class DetectionComponent implements OnInit {
     private patientService: PatientService,
     private detectionService: DetectionService,
     private authService: AuthService,
+    private roboflowVisualization: RoboflowVisualizationService,
     private sanitizer: DomSanitizer,
     private http: HttpClient
   ) {}
@@ -211,30 +213,326 @@ export class DetectionComponent implements OnInit {
   }
 
   infer(): void {
+    if (!this.selectedPatientId) {
+      alert('Please select a patient first');
+      return;
+    }
+
+    if (!this.selectedFile && !this.selectedImageUrl) {
+      alert('Please provide an image either by uploading a file or entering a URL');
+      return;
+    }
+
+    this.isProcessing = true;
     $('#output').html("Inferring...");
     $("#resultContainer").show();
     $('html').scrollTop(100000);
 
     this.getSettingsFromForm((settings: any) => {
-      settings.error = (xhr: any) => {
-        $('#output').html("").append([
-          "Error loading response.",
-          "",
-          "Check your API key, model, version,",
-          "and other parameters",
-          "then try again."
-        ].join("\n"));
+      settings.error = (xhr: any, status: string, error: string) => {
+        console.error('❌ Roboflow API Error:');
+        console.error('Status:', status);
+        console.error('Error:', error);
+        console.error('Response:', xhr.responseText);
+        console.error('Status Code:', xhr.status);
+        
+        
+        let errorMessage = 'Unknown error';
+        if (xhr.responseText) {
+          try {
+            const responseData = JSON.parse(xhr.responseText);
+            errorMessage = responseData.message || responseData.error || xhr.responseText;
+          } catch (e) {
+            errorMessage = xhr.responseText;
+          }
+        } else {
+          errorMessage = error || status || 'Network error';
+        }
+        
+        $('#output').html(`
+          <div class="detection-error">
+            <h3>❌ Roboflow API Error</h3>
+            <p><strong>Error:</strong> ${errorMessage}</p>
+            <details>
+              <summary>Technical Details</summary>
+              <pre>Status: ${xhr.status} ${status}
+Error: ${error}
+Response: ${xhr.responseText || 'No response'}</pre>
+            </details>
+            <div class="mt-3">
+              <p><strong>Troubleshooting:</strong></p>
+              <ul>
+                <li>Verify your API key is correct</li>
+                <li>Check model name: should be exactly as shown in Roboflow</li>
+                <li>Verify model version number</li>
+                <li>Ensure model is deployed and public</li>
+              </ul>
+            </div>
+          </div>
+        `);
+        this.isProcessing = false;
       };
 
-      $.ajax(settings).then((response: any) => {
+      // Ajouter le Content-Type correct
+      settings.contentType = 'application/x-www-form-urlencoded';
+      settings.processData = false;
+      
+      console.log('🚀 Sending request to Roboflow...', {
+        url: settings.url,
+        method: settings.method,
+        contentType: settings.contentType,
+        format: settings.format
+      });
+      
+      // Test if the model exists first
+      const modelName = ($('#model').val() as string).replace(/\s+/g, '');
+      const version = $('#version').val() as string;
+      const apiKey = $('#api_key').val() as string;
+      
+      const testUrl = `https://detect.roboflow.com/${encodeURIComponent(modelName)}?api_key=${apiKey}`;
+      console.log('🧪 Testing model existence at:', testUrl);
+      
+      // Quick test request using Promise instead of async/await
+      $.get(testUrl).fail((testError: any) => {
+        if (testError.status === 404) {
+          $('#output').html(`
+            <div class="detection-error">
+              <h3>❌ Model Not Found</h3>
+              <p><strong>The model "${modelName}" version "${version}" was not found.</strong></p>
+              <div class="mt-3">
+                <p><strong>Please verify:</strong></p>
+                <ul>
+                  <li>Model name is exactly as shown in your Roboflow dashboard</li>
+                  <li>Model version is deployed and accessible</li>
+                  <li>Model is set to public or your API key has access</li>
+                  <li>API key is correct</li>
+                </ul>
+                <p><strong>Current settings:</strong></p>
+                <ul>
+                  <li>Model: ${modelName}</li>
+                  <li>Version: ${version}</li>
+                  <li>API Key: ${apiKey.substring(0, 8)}...</li>
+                </ul>
+              </div>
+            </div>
+          `);
+          this.isProcessing = false;
+          return;
+        } else if (testError.status === 403) {
+          $('#output').html(`
+            <div class="detection-error">
+              <h3>🔒 Access Forbidden</h3>
+              <p><strong>Your API key doesn't have permission to access this model.</strong></p>
+              <div class="mt-3">
+                <p><strong>Solutions:</strong></p>
+                <ul>
+                  <li>Make sure your model is set to <strong>Public</strong> in Roboflow</li>
+                  <li>Check that your API key has the correct permissions</li>
+                  <li>Try regenerating your API key in Roboflow settings</li>
+                  <li>Verify you're the owner of the model or have been granted access</li>
+                </ul>
+                <p><strong>Current settings:</strong></p>
+                <ul>
+                  <li>Model: ${modelName}</li>
+                  <li>Version: ${version}</li>
+                  <li>API Key: ${apiKey.substring(0, 8)}...</li>
+                </ul>
+                <p><strong>🎯 Next steps:</strong></p>
+                <ol>
+                  <li>Go to your Roboflow dashboard</li>
+                  <li>Open your model "${modelName}"</li>
+                  <li>Go to Deploy → API tab</li>
+                  <li>Make sure "Public" is enabled OR copy the correct API key</li>
+                </ol>
+              </div>
+            </div>
+          `);
+          this.isProcessing = false;
+          return;
+        }
+      }).done(() => {
+        console.log('✅ Model exists, proceeding with inference...');
+        
+        $.ajax(settings).then(async (response: any) => {
+        console.log('Roboflow API Response:', response);
+        
         if (settings.format === "json") {
-          const pretty = $('<pre>');
-          const formatted = JSON.stringify(response, null, 4);
-
-          pretty.html(formatted);
-          $('#output').html("").append(pretty);
+          // Process JSON response with tumor detection
+          const imageUrl = this.selectedFile ? URL.createObjectURL(this.selectedFile) : this.selectedImageUrl;
+          
+          if (imageUrl) {
+            try {
+              const processedResult = this.roboflowVisualization.processRoboflowResponse(response, imageUrl);
+              const detectionReport = this.roboflowVisualization.generateDetectionReport(processedResult);
+              
+              // Create annotated image with bounding boxes
+              if (processedResult.boundingBoxes.length > 0) {
+                const annotatedImageUrl = await this.roboflowVisualization.createAnnotatedImage(imageUrl, processedResult.boundingBoxes);
+                
+                // Display both original and annotated images with Roboflow-style interface
+                const resultHtml = `
+                  <div class="roboflow-detection-result">
+                    <div class="detection-header">
+                      <h2 class="detection-title">🔍 Brain Tumor Detection Results</h2>
+                      <div class="detection-stats">
+                        <div class="stat-card">
+                          <span class="stat-number">${processedResult.summary.totalDetections}</span>
+                          <span class="stat-label">Predictions</span>
+                        </div>
+                        <div class="stat-card">
+                          <span class="stat-number">${processedResult.summary.highestConfidence}%</span>
+                          <span class="stat-label">Max Confidence</span>
+                        </div>
+                        ${processedResult.summary.primaryTumorType ? `
+                        <div class="stat-card primary">
+                          <span class="stat-number">${processedResult.summary.primaryTumorType.replace('_tumor', '').toUpperCase()}</span>
+                          <span class="stat-label">Primary Type</span>
+                        </div>` : ''}
+                      </div>
+                    </div>
+                    
+                    <div class="images-comparison">
+                      <div class="image-container">
+                        <h4>Original MRI Scan</h4>
+                        <img src="${imageUrl}" alt="Original" class="result-image" />
+                      </div>
+                      <div class="image-container">
+                        <h4>Detected Tumors (Annotated)</h4>
+                        <img src="${annotatedImageUrl}" alt="Annotated" class="result-image" />
+                      </div>
+                    </div>
+                    
+                    <div class="predictions-section">
+                      <h3 class="section-title">📊 Predictions Details</h3>
+                      <div class="predictions-grid">
+                        ${processedResult.boundingBoxes.map((box, index) => {
+                          const prediction = response.predictions[index];
+                          return `
+                            <div class="prediction-card">
+                              <div class="prediction-header">
+                                <div class="prediction-badge" style="background-color: ${box.color}">
+                                  ${box.class.replace('_tumor', '').toUpperCase()}
+                                </div>
+                                <div class="confidence-score">
+                                  <span class="confidence-value">${box.confidence}%</span>
+                                  <span class="confidence-label">confidence</span>
+                                </div>
+                              </div>
+                              <div class="prediction-details">
+                                <div class="detail-row">
+                                  <span class="detail-label">Class:</span>
+                                  <span class="detail-value">${prediction?.class || box.class}</span>
+                                </div>
+                                <div class="detail-row">
+                                  <span class="detail-label">Class ID:</span>
+                                  <span class="detail-value">${prediction?.class_id || 'N/A'}</span>
+                                </div>
+                                <div class="detail-row">
+                                  <span class="detail-label">Detection ID:</span>
+                                  <span class="detail-value">${prediction?.detection_id || 'N/A'}</span>
+                                </div>
+                                <div class="detail-row">
+                                  <span class="detail-label">Position (x, y):</span>
+                                  <span class="detail-value">(${prediction?.x || Math.round(box.x)}, ${prediction?.y || Math.round(box.y)})</span>
+                                </div>
+                                <div class="detail-row">
+                                  <span class="detail-label">Size (w × h):</span>
+                                  <span class="detail-value">${prediction?.width || Math.round(box.width)} × ${prediction?.height || Math.round(box.height)} px</span>
+                                </div>
+                              </div>
+                            </div>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+                    
+                    <div class="clinical-summary">
+                      <h3 class="section-title">⚕️ Clinical Summary</h3>
+                      <div class="clinical-content">
+                        ${processedResult.boundingBoxes.map(box => {
+                          const tumorType = box.class.replace('_tumor', '');
+                          let clinicalNote = '';
+                          switch(tumorType) {
+                            case 'glioma':
+                              clinicalNote = 'Glioma detected - These tumors arise from glial cells. Recommend urgent neurosurgical consultation and contrast-enhanced MRI.';
+                              break;
+                            case 'pituitary':
+                              clinicalNote = 'Pituitary tumor detected - May affect hormone production. Recommend endocrinological evaluation and pituitary function tests.';
+                              break;
+                            case 'meningioma':
+                              clinicalNote = 'Meningioma detected - Usually benign tumors arising from meninges. Monitor growth pattern and consider surgical evaluation if symptomatic.';
+                              break;
+                            default:
+                              clinicalNote = `${tumorType} tumor detected - Requires specialist consultation for further evaluation.`;
+                          }
+                          return `<div class="clinical-note"><strong>${tumorType.toUpperCase()}:</strong> ${clinicalNote}</div>`;
+                        }).join('')}
+                      </div>
+                    </div>
+                    
+                    <details class="raw-response">
+                      <summary>🔧 Raw API Response (JSON)</summary>
+                      <pre class="json-code">${JSON.stringify(response, null, 2)}</pre>
+                    </details>
+                  </div>
+                `;
+                
+                $('#output').html(resultHtml);
+              } else {
+                // No tumors detected
+                const noDetectionHtml = `
+                  <div class="detection-result no-detection">
+                    <div class="detection-summary">
+                      <h3>🔍 TUMOR DETECTION RESULTS</h3>
+                      <div class="summary-stats">
+                        <span class="stat no-tumor">❌ No tumors detected</span>
+                      </div>
+                    </div>
+                    
+                    <div class="image-container">
+                      <h4>Analyzed MRI</h4>
+                      <img src="${imageUrl}" alt="Analyzed" class="result-image" />
+                    </div>
+                    
+                    <div class="clinical-note">
+                      <p>✅ No abnormalities detected in this MRI scan. Consider additional views or follow-up if clinically indicated.</p>
+                    </div>
+                    
+                    <details class="raw-data">
+                      <summary>🔧 Raw API Response</summary>
+                      <pre>${JSON.stringify(response, null, 2)}</pre>
+                    </details>
+                  </div>
+                `;
+                
+                $('#output').html(noDetectionHtml);
+              }
+              
+            } catch (error) {
+              console.error('Error processing detection results:', error);
+              const errorHtml = `
+                <div class="detection-error">
+                  <h3>❌ Error Processing Results</h3>
+                  <p>There was an error processing the detection results. Please try again.</p>
+                  <details>
+                    <summary>Raw Response</summary>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                  </details>
+                </div>
+              `;
+              $('#output').html(errorHtml);
+            }
+          } else {
+            // Fallback to original JSON display
+            const pretty = $('<pre>');
+            const formatted = JSON.stringify(response, null, 4);
+            pretty.html(formatted);
+            $('#output').html("").append(pretty);
+          }
+          
           $('html').scrollTop(100000);
         } else {
+          // Handle image format response (annotated image from Roboflow)
           const arrayBufferView = new Uint8Array(response);
           const blob = new Blob([arrayBufferView], { 'type': 'image/jpeg' });
           const base64image = window.URL.createObjectURL(blob);
@@ -247,8 +545,36 @@ export class DetectionComponent implements OnInit {
             };
           }
           img.attr('src', base64image);
-          $('#output').html("").append(img);
+          img.addClass('result-image');
+          
+          const imageResultHtml = `
+            <div class="detection-result">
+              <h3>🔍 TUMOR DETECTION RESULTS</h3>
+              <div class="image-container">
+                <h4>Annotated MRI (from Roboflow)</h4>
+              </div>
+            </div>
+          `;
+          
+          $('#output').html(imageResultHtml).append(img);
         }
+        
+        // Marquer le traitement comme terminé
+        this.isProcessing = false;
+      }).catch((error) => {
+        console.error('Error during inference:', error);
+        $('#output').html(`
+          <div class="detection-error">
+            <h3>❌ Error During Inference</h3>
+            <p>There was an error processing your request. Please check your settings and try again.</p>
+            <details>
+              <summary>Error Details</summary>
+              <pre>${error && typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error || 'Unknown error')}</pre>
+            </details>
+          </div>
+        `);
+        this.isProcessing = false;
+      });
       });
     });
   }
@@ -280,21 +606,27 @@ export class DetectionComponent implements OnInit {
   }
 
   setupButtonListeners(): void {
-    $('#inputForm').submit(() => {
-      this.infer();
+    // Disable jQuery form submission and use Angular instead
+    $('#inputForm').submit((event) => {
+      event.preventDefault();
+      // Create a native Event for Angular handler
+      const nativeEvent = new Event('submit', { bubbles: true, cancelable: true });
+      this.handleSubmit(nativeEvent);
       return false;
     });
 
-    $('.bttn').click(function() {
-      $(this).parent().find('.bttn').removeClass('active');
-      $(this).addClass('active');
+    $('.bttn').click((event) => {
+      $(event.target).parent().find('.bttn').removeClass('active');
+      $(event.target).addClass('active');
 
       if ($('#computerButton').hasClass('active')) {
         $('#fileSelectionContainer').show();
         $('#urlContainer').hide();
+        this.uploadMethod = 'upload';
       } else {
         $('#fileSelectionContainer').hide();
         $('#urlContainer').show();
+        this.uploadMethod = 'url';
       }
 
       if ($('#jsonButton').hasClass('active')) {
@@ -328,12 +660,21 @@ export class DetectionComponent implements OnInit {
       method: "POST",
     };
 
+    const modelName = ($('#model').val() as string).replace(/\s+/g, '');
+    const version = $('#version').val() as string;
+    const apiKey = $('#api_key').val() as string;
+    
+    console.log('🔧 Roboflow Settings:');
+    console.log('Model:', modelName);
+    console.log('Version:', version);
+    console.log('API Key:', apiKey ? apiKey.substring(0, 8) + '...' : 'Not provided');
+
     const parts: string[] = [
       "https://detect.roboflow.com/",
-      $('#model').val() as string,
+      encodeURIComponent(modelName),
       "/",
-      $('#version').val() as string,
-      "?api_key=" + $('#api_key').val()
+      version,
+      "?api_key=" + apiKey
     ];
 
     const classes = $('#classes').val();
@@ -365,25 +706,41 @@ export class DetectionComponent implements OnInit {
 
     const method = $('#method .active').attr('data-value');
     if (method === "upload") {
-      const fileInput = $('#file').get(0) as HTMLInputElement;
-      const file = fileInput?.files?.item(0);
-      if (!file) return alert("Please select a file.");
+      // Use Angular variables instead of jQuery
+      if (!this.selectedFile) {
+        return alert("Please select a file.");
+      }
 
-      this.getBase64fromFile(file).then((base64image: string) => {
-        settings.url = parts.join("");
-        settings.data = base64image;
+      this.getBase64fromFile(this.selectedFile).then((base64image: string) => {
+      settings.url = parts.join("");
+      settings.data = base64image;
 
-        console.log(settings);
-        cb(settings);
+      console.log('🌐 Full API URL:', settings.url);
+      console.log('📤 Request Settings:', {
+        method: settings.method,
+        url: settings.url,
+        format: settings.format,
+        dataLength: base64image.length
+      });
+      cb(settings);
       });
     } else {
-      const url = $('#url').val() as string;
-      if (!url) return alert("Please enter an image URL");
+      // Use Angular variables for URL as well
+      if (!this.selectedImageUrl) {
+        return alert("Please enter an image URL");
+      }
 
-      parts.push("&image=" + encodeURIComponent(url));
+      parts.push("&image=" + encodeURIComponent(this.selectedImageUrl));
 
       settings.url = parts.join("");
-      console.log(settings);
+      
+      console.log('🌐 Full API URL:', settings.url);
+      console.log('📤 Request Settings:', {
+        method: settings.method,
+        url: settings.url,
+        format: settings.format,
+        imageUrl: this.selectedImageUrl
+      });
       cb(settings);
     }
   }
@@ -436,7 +793,7 @@ export class DetectionComponent implements OnInit {
   }
 
   private setupEventListeners(): void {
-    // Handle URL input
+    // Handle URL input with jQuery as well
     const urlInput = document.getElementById('url') as HTMLInputElement;
     if (urlInput) {
       urlInput.addEventListener('input', (event) => {
@@ -446,6 +803,14 @@ export class DetectionComponent implements OnInit {
         this.previewImageUrl = this.selectedImageUrl ? this.sanitizer.bypassSecurityTrustUrl(this.selectedImageUrl) : null;
       });
     }
+    
+    // Also handle jQuery URL input events
+    $('#url').on('input', (event) => {
+      const input = event.target as HTMLInputElement;
+      this.selectedImageUrl = input.value;
+      this.selectedFile = null;
+      this.previewImageUrl = this.selectedImageUrl ? this.sanitizer.bypassSecurityTrustUrl(this.selectedImageUrl) : null;
+    });
 
     // Handle upload method toggle
     const computerButton = document.getElementById('computerButton');
@@ -573,6 +938,10 @@ export class DetectionComponent implements OnInit {
       this.selectedImageUrl = null; // Clear URL if file is selected
       this.createImagePreview(this.selectedFile);
       this.updateFileNameDisplay(this.selectedFile.name);
+      
+      // Synchronize with jQuery event handler
+      const fileName = this.selectedFile.name;
+      $('#fileName').val(fileName);
     }
   }
 

@@ -6,12 +6,12 @@ export interface IDetection {
     specialist: User | string;  // Can be either the full user object or just the ID
     image: string | null;
     detectionDate: Date;
-    results: {
-        confidence: number;
-        overlap: number;
-        classes: string[];
-        jsonResult: any;
+    results?: {
+        confidence?: number;
+        overlap?: number;
+        classes?: string[];
+        jsonResult?: any;
         imageResult?: string;
-    };
+    } | null;
     showJson?: boolean;  // UI state property
 }

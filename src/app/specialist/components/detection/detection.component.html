@@ -10,15 +10,15 @@
 				<img class="header__logo" src="https://uploads-ssl.webflow.com/5f6bc60e665f54545a1e52a5/6143750f1177056d60fc52d9_roboflow_logomark_inference.png" alt="Roboflow Inference">
 				<div>
 					<label class="header__label" for="model">Model</label>
-					<input class="input" type="text" id="model" value="zeta-hahvm" />
+					<input class="input" type="text" id="model" value="zeta-qbrzw" />
 				</div>
 				<div>
 					<label class="header__label" for="version">Version</label>
-					<input class="input" type="number" id="version" value="3" />
+					<input class="input" type="number" id="version" value="2" />
 				</div>
 				<div>
 					<label class="header__label" for="api_key">API Key</label>
-					<input class="input" type="text" id="api_key" value="6KI99ilC5PxtfXxcMgSp" />
+					<input class="input" type="text" id="api_key" value="VBEsNdyXz2YyyV4qg6yh" />
 				</div>
 			</div>
 		</div>
@@ -49,7 +49,7 @@
 						<input class="input input--left flex-1" type="text" id="fileName" disabled />							
 						<button type="button" (click)="fileInput.click()" class="bttn right active">Browse</button>
 					</div>
-					<input #fileInput style="display: none;" type="file" accept="image/*" (change)="onFileSelected($event)" />
+						<input #fileInput id="file" style="display: none;" type="file" accept="image/*" (change)="onFileSelected($event)" />
 				</div>
 
 				<div class="col-12-m8" id="urlContainer" style="display: none;">
@@ -61,8 +61,8 @@
         
 				<div class="col-12-m6">
 					<label class="input__label" for="classes">Filter Classes</label>
-					<input type="text" id="classes" placeholder="Enter class names" class="input"/><br>
-					<span class="text--small">Separate names with commas</span>
+					<input type="text" id="classes" placeholder="glioma_tumor,pituitary_tumor,meningioma_tumor" value="glioma_tumor,pituitary_tumor,meningioma_tumor" class="input"/><br>
+					<span class="text--small">Tumor types: glioma_tumor, pituitary_tumor, meningioma_tumor</span>
 				</div>
 
 				<div class="col-6-m3 relative">
@@ -120,9 +120,10 @@
 				</div>
 
 				<div class="col-12">
-					<button type="submit" 
+					<button type="button" 
 							value="Run Inference" 
 							class="bttn__primary" 
+							(click)="infer()"
 							[disabled]="isProcessing || (!selectedFile && !selectedImageUrl)">
 						<span *ngIf="!isProcessing">Run Inference</span>
 						<span *ngIf="isProcessing">
@@ -177,19 +178,19 @@
 									</div>
 								</div>
 								<div class="text-sm">
-									<p><strong>Confidence:</strong> {{ detection.results?.confidence !== undefined ? detection.results.confidence + '%' : 'N/A' }}</p>
-									<p><strong>Overlap:</strong> {{ detection.results?.overlap !== undefined ? detection.results.overlap + '%' : 'N/A' }}</p>
+									<p><strong>Confidence:</strong> {{ detection.results?.confidence !== undefined ? detection.results?.confidence + '%' : 'N/A' }}</p>
+									<p><strong>Overlap:</strong> {{ detection.results?.overlap !== undefined ? detection.results?.overlap + '%' : 'N/A' }}</p>
 									<p><strong>Classes Detected:</strong></p>
 									<ul class="list-disc list-inside">
 										<li *ngFor="let class of detection.results?.classes">{{class}}</li>
-										<li *ngIf="!detection.results?.classes || detection.results.classes.length === 0">None</li>
+										<li *ngIf="!detection.results?.classes || detection.results?.classes?.length === 0">None</li>
 									</ul>
 									<div *ngIf="detection.results?.jsonResult" class="mt-2">
 										<button (click)="toggleJsonResult(detection)" class="text-indigo-600 hover:text-indigo-800">
 											{{detection.showJson ? 'Hide' : 'Show'}} JSON Result
 										</button>
 										<pre *ngIf="detection.showJson" class="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
-											{{detection.results.jsonResult | json}}
+											{{detection.results?.jsonResult | json}}
 										</pre>
 									</div>
 								</div>
